@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS Groups_History (
 );
 
 CREATE TABLE IF NOT EXISTS Content (
-  content_title VARCHAR(100), -- nullable for comments
-  content_value VARCHAR(1000), -- nullable for threads
+  content_title VARCHAR(100),
+  content_value VARCHAR(1000),
 
   project_key INT,
   FOREIGN KEY (project_key) REFERENCES Content(content_key),
@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS Content (
   content_deleted BOOLEAN DEFAULT FALSE
 );
 CREATE TABLE IF NOT EXISTS Content_History (
-  content_title VARCHAR(100), -- nullable for comments
-  content_value VARCHAR(1000), -- nullable for threads
+  content_title VARCHAR(100),
+  content_value VARCHAR(1000),
   
   project_key INT,
   FOREIGN KEY (project_key) REFERENCES Content(content_key),
@@ -422,6 +422,7 @@ this_procedure:BEGIN
   DECLARE valid_thread_key INT DEFAULT NULL;
   DECLARE valid_parent_content_key INT DEFAULT NULL;
   DECLARE new_comment_key INT DEFAULT NULL;
+  DECLARE new_comment_title VARCHAR(100);
 
   -- validate inputs
   IF p_content_value IS NULL THEN
@@ -446,8 +447,8 @@ this_procedure:BEGIN
     RETURN NULL;
   END IF;
 
-  SELECT thread_key
-  INTO valid_thread_key
+  SELECT thread_key, CONCAT('RE: ',content_title)
+  INTO valid_thread_key, new_comment_title
   FROM Content
   WHERE content_key = p_thread_key
     AND thread_key = p_thread_key
@@ -457,8 +458,8 @@ this_procedure:BEGIN
   END IF;
   
   IF p_parent_content_key IS NOT NULL THEN
-    SELECT content_key
-    INTO valid_parent_content_key
+    SELECT content_key, LEFT(CONCAT('RE: ',content_title),100)
+    INTO valid_parent_content_key, new_comment_title
     FROM Content
     WHERE content_key = p_parent_content_key
       AND project_key = p_project_key
@@ -477,6 +478,7 @@ this_procedure:BEGIN
   UPDATE Content
   SET project_key = valid_project_key,
       thread_key = valid_thread_key,
+      content_title = new_comment_title,
       content_value = p_content_value
   WHERE content_key = new_comment_key;
 
