@@ -11,8 +11,8 @@
 -- ('this is the 2nd message in the 1st thread of the 1st project.', 1, 2, 2, 2),
 -- ('this is the 1st reply to the 1st message in the 1st thread of the 1st project.', 1, 2, 4, 2);
 
-SELECT create_project('Project Hello World!', 'This is the 1st project.', 1) AS 'new_project_key';
-SELECT create_project('Project 2', 'This is the 2nd project.', 2) AS 'new_project_key';
-SELECT create_thread(1,'1st thread on project 1','this is the 1st message in the 1st thread of the 1st project.',1) AS 'new_thread_key';
-SELECT create_comment('this is the 2nd message in the 1st thread of the 1st project.',1,3,NULL,2) AS 'new_comment_key';
-SELECT create_comment('this is the 1st reply to the 1st message in the 1st thread of the 1st project.',1,3,4,2) AS 'new_comment_key';
+SELECT create_project('Project Hello World!', 'This is the 1st project.', 1);
+SELECT create_project('Project 2', 'This is the 2nd project.', 2);
+SELECT create_thread(1,'1st thread on project 1','this is the 1st message in the 1st thread of the 1st project.',1);
+SELECT create_comment('this is the 2nd message in the 1st thread of the 1st project.',1,3,NULL,2);
+SELECT create_comment('this is the 1st reply to the 1st message in the 1st thread of the 1st project.',1,3,4,2);
