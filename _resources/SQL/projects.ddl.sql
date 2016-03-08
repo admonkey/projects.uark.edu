@@ -183,6 +183,7 @@ DROP PROCEDURE IF EXISTS login_shib_user;
 DROP FUNCTION IF EXISTS create_new_content_key;
 DROP FUNCTION IF EXISTS create_project;
 DROP PROCEDURE IF EXISTS fetch_projects;
+DROP PROCEDURE IF EXISTS fetch_children;
 -- DROP PROCEDURE IF EXISTS fetch_project;
 DROP FUNCTION IF EXISTS create_thread;
 -- DROP PROCEDURE IF EXISTS fetch_threads;
@@ -344,6 +345,26 @@ this_procedure:BEGIN
   FROM `Content`
   WHERE content_key = project_key
     AND content_deleted = FALSE;
+
+END $$
+
+
+CREATE PROCEDURE fetch_children (
+  IN p_parent_content_key INT
+)
+this_procedure:BEGIN
+
+  IF p_parent_content_key IS NULL THEN
+    SELECT *
+    FROM Content
+    WHERE parent_content_key IS NULL
+      AND content_deleted = FALSE;
+  ELSE
+    SELECT *
+    FROM Content
+    WHERE parent_content_key = p_parent_content_key
+      AND content_deleted = FALSE;  
+  END IF;
 
 END $$
 
