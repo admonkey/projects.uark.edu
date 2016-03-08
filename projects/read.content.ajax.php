@@ -1,6 +1,6 @@
 <?php
 $include_mysqli = true;
-require_once("_resources/header.inc.php");
+require_once("_resources/resources.inc.php");
 
 if (valid_positive_integer(@$_GET["content_key"]))
   $content_key = "$_GET[content_key]";
@@ -57,5 +57,3 @@ if( !empty($mysqli_connected) ){
 
 }
 ?>
-
-<?php require_once("_resources/footer.inc.php");?>

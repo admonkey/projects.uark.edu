@@ -3,6 +3,7 @@
 $include_jquery_ui = true;
 $include_tablesorter = true;
 $include_mysqlo = true;
+$include_mysqli = true;
 require_once("_resources/header.inc.php");
 
 echo "<h1>$section_title</h1>";
@@ -22,7 +23,8 @@ echo "<h1>$section_title</h1>";
 <div id='list_of_projects_div' class='table-responsive' style='display:none'>
 </div><!-- /#list_of_projects_div.table-responsive -->
 
-<div id='project_content_div' class='well' style='display:none'>
+<div id='project_content_div' class='well' <?php if(empty($_GET["content_key"])) echo "style='display:none'"; ?>>
+<?php if(!empty($_GET["content_key"])) include("read.content.ajax.php"); ?>
 </div><!-- /#list_of_projects_div.table-responsive -->
 
 <div id='list_of_threads_div' class='table-responsive' style='display:none'>
@@ -70,6 +72,7 @@ function read_content(content_key, insert_div){
       success: function(result){
 	insert_div.html(result);
 	insert_div.show("blind");
+	history.pushState({}, null, "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
       }
     });
   });
