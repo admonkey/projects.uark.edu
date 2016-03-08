@@ -169,8 +169,8 @@ DROP PROCEDURE IF EXISTS login_shib_user;
 DROP PROCEDURE IF EXISTS create_content;
 DROP PROCEDURE IF EXISTS update_content;
 DROP PROCEDURE IF EXISTS fetch_children;
--- TODO:
 DROP PROCEDURE IF EXISTS read_content;
+-- TODO:
 DROP PROCEDURE IF EXISTS delete_content;
 
 DELIMITER $$
@@ -312,6 +312,26 @@ this_procedure:BEGIN
     TRUE,
     valid_content_createdby_user_key
   );
+
+END $$
+
+
+CREATE PROCEDURE read_content (
+  IN p_content_key INT
+)
+this_procedure:BEGIN
+
+  SELECT c.*,
+    uc.username AS 'content_createdby_username',
+    ue.username AS 'content_editedby_username'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Users ue
+    ON c.content_editedby_user_key = ue.user_key
+  WHERE
+    content_key = p_content_key
+    AND content_deleted = FALSE;
 
 END $$
 
