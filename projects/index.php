@@ -38,6 +38,14 @@ function isset(variable) {
     return typeof variable !== typeof undefined ? true : false;
 }
 
+function toggle_button(toggle_btn){
+  if(toggle_btn.attr("btn-show") === "true"){
+    toggle_btn.text("Hide "+toggle_btn.attr("btn-text")).addClass("btn-warning").removeClass("btn-success").attr("btn-show", "false");
+  } else {
+    toggle_btn.text("Show "+toggle_btn.attr("btn-text")).removeClass("btn-warning").addClass("btn-success").attr("btn-show", "true");
+  }
+}
+
 function list_content(parent_content_key, insert_div, toggle_btn){
   if (insert_div.is(":hidden")) {
     $.ajax({url: "list.content.ajax.php", 
@@ -49,11 +57,7 @@ function list_content(parent_content_key, insert_div, toggle_btn){
     });
   } else insert_div.hide("blind");
   if(isset(toggle_btn)){
-    if(toggle_btn.attr("btn-show") === "true"){
-      toggle_btn.text("Hide "+toggle_btn.attr("btn-text")).addClass("btn-warning").removeClass("btn-success").attr("btn-show", "false");
-    } else {
-      toggle_btn.text("Show "+toggle_btn.attr("btn-text")).removeClass("btn-warning").addClass("btn-success").attr("btn-show", "true");
-    }
+    toggle_button(toggle_btn);
   }
 }
 
