@@ -22,6 +22,9 @@ echo "<h1>$section_title</h1>";
 <div id='list_of_projects_div' class='table-responsive' style='display:none'>
 </div><!-- /#list_of_projects_div.table-responsive -->
 
+<div id='project_content_div' class='well' style='display:none'>
+</div><!-- /#list_of_projects_div.table-responsive -->
+
 <div id='list_of_threads_div' class='table-responsive' style='display:none'>
 </div><!-- /#list_of_threads_div.table-responsive -->
 
@@ -52,7 +55,7 @@ function list_content(parent_content_key, insert_div, toggle_btn){
       success: function(result){
 	insert_div.html(result);
 	apply_tablesorter();
-	insert_div.show("blind")
+	insert_div.show("blind");
       }
     });
   } else insert_div.hide("blind");
@@ -61,22 +64,26 @@ function list_content(parent_content_key, insert_div, toggle_btn){
   }
 }
 
-function fetch_projects(){
-  if ($("#list_of_projects_div").is(":hidden")) {
-    $.ajax({url: "list.projects.ajax.php", 
+function read_content(content_key, insert_div){
+  insert_div.hide("blind", function(){
+    $.ajax({url: "read.content.ajax.php?content_key="+content_key, 
       success: function(result){
-	$("#list_of_projects_div").html(result);
-	apply_tablesorter();
-	$("#list_of_projects_div").show("blind", function(){
-	  $("#show_list_of_projects").text("Hide Projects").addClass("btn-warning").removeClass("btn-primary");
-	});
+	insert_div.html(result);
+	insert_div.show("blind");
       }
     });
-  } else {
-    $("#list_of_projects_div").hide("blind", function(){
-      $("#show_list_of_projects").text("Show Projects").removeClass("btn-warning").addClass("btn-primary");
-    });
-  }
+  });
+}
+
+function hyperlink_row(){
+	$("tr").click( function() {
+		var row = $(this);
+		var content_key = row.find("content_data").attr("content_key");
+		read_content(content_key,$("#project_content_div"));
+		row.addClass("bg-primary").siblings().removeClass("bg-primary");
+	}).hover( function() {
+		$(this).toggleClass("hover");
+	});
 }
 
 function fetch_threads(){
@@ -95,19 +102,6 @@ function fetch_threads(){
 		  $("#show_list_of_threads").text("Show Threads").removeClass("btn-warning").addClass("btn-primary");
 		});
 	}
-}
-
-function hyperlink_row(){
-	$("tr").click( function() {
-		disable_create_thread();
-		var row = $(this);
-		var thread_id = row.find("message_data").attr("thread_id");
-		var thread_name = row.find("message_data").attr("thread_name");
-		fetch_messages(thread_id,thread_name,1);
-		row.addClass("bg-primary").siblings().removeClass("bg-primary");
-	}).hover( function() {
-		$(this).toggleClass("hover");
-	});
 }
 
 function create_thread() {

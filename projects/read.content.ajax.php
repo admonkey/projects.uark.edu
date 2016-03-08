@@ -22,14 +22,18 @@ if( !empty($mysqli_connected) ){
       </label>
     </p>
     <p><label class='label label-info'>$row[content_creation_time]</label></p>
+  ";
     
+  if (!empty($row["content_editedby_user_key"])) echo "
     <p>
       <label class='label label-primary'>
 	<a href='$path_web_root/Profiles/?user_key=$row[content_editedby_user_key]'>$row[content_editedby_username]</a>
       </label>
     </p>
     <p><label class='label label-info'>$row[content_edited_time]</label></p>
+  ";
     
+  echo "
     <p>$row[content_value]</p>
     
     
