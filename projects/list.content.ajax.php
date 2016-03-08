@@ -32,19 +32,13 @@ if( !empty($mysqli_connected) ){
       <tr>
 	<td>
 	  <content_data
-	    content_title='$row[content_title]'
-	    content_value='$row[content_value]'
 	    project_key='$row[project_key]'
 	    thread_key='$row[thread_key]'
 	    parent_content_key='$row[parent_content_key]'
 	    has_children='$row[has_children]'
 	    content_key='$row[content_key]'
-	    content_creation_time='$row[content_creation_time]'
 	    content_createdby_user_key='$row[content_createdby_user_key]'
-	    content_createdby_username='$row[content_createdby_username]'
-	    content_edited_time='$row[content_edited_time]'
 	    content_editedby_user_key='$row[content_editedby_user_key]'
-	    content_editedby_username='$row[content_editedby_username]'
 	  />
 	  $row[content_title]
 	</td>
