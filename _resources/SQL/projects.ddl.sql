@@ -321,8 +321,14 @@ CREATE PROCEDURE fetch_children (
 )
 this_procedure:BEGIN
 
-  SELECT *
-  FROM Content
+  SELECT c.*,
+    uc.username AS 'content_createdby_username',
+    ue.username AS 'content_editedby_username'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Users ue
+    ON c.content_editedby_user_key = ue.user_key
   WHERE
     IF(p_parent_content_key IS NULL,
       parent_content_key IS NULL,
