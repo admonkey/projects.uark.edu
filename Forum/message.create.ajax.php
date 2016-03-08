@@ -26,11 +26,11 @@ $include_mysqlo = true;
 require_once('_resources/header.inc.php');
 
 sec_session_start();
-if (empty($_SESSION["user_id"])){
+if (empty($_SESSION["user_key"])){
   echo "<p class='bg-danger text-danger'>ERROR: Not Logged In</p>";
   die();
 } else {
-  $message_author_user_id = $_SESSION["user_id"];
+  $message_author_user_key = $_SESSION["user_key"];
 }
 
 ?>
@@ -43,7 +43,7 @@ if( !empty($mysqlo_connected) ){
 
     $sql="
 		CALL Forum_proc_Insert_Message(
-			'$message_text', $message_thread_id, $message_author_user_id, '$thread_name'
+			'$message_text', $message_thread_id, $message_author_user_key, '$thread_name'
 		)
     ";
     $result = mysql_query($sql) or die(mysql_error());

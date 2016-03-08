@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS Content (
   content_value VARCHAR(1000), -- nullable for threads
 
   content_key INT PRIMARY KEY AUTO_INCREMENT,
-  project_key INT NOT NULL,
+  project_key INT,
   FOREIGN KEY (project_key) REFERENCES Content(content_key),
   thread_key INT,
   FOREIGN KEY (thread_key) REFERENCES Content(content_key),
@@ -81,9 +81,9 @@ CREATE TABLE IF NOT EXISTS Votes (
   FOREIGN KEY (content_key) REFERENCES Content(content_key),
   user_key INT NOT NULL,
   FOREIGN KEY (user_key) REFERENCES Users(user_key),
-  vote_value BOOLEAN NOT NULL,
-  vote_creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_key,content_key)
+  vote_value TINYINT NOT NULL, -- downvote = -1, upvote = 1, inappropriate flag = -2
+  vote_creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  -- in app, don't allow people to send duplicate vote on current, but changes are OK
 );
 
 -- STORED PROCEDURES --
@@ -91,7 +91,47 @@ DELIMITER $$
 
 -- DROP PROCEDURE IF EXISTS create_project;
 -- DROP PROCEDURE IF EXISTS create_content;
+
+DROP PROCEDURE IF EXISTS login_shib_user;
 DROP PROCEDURE IF EXISTS edit_content;
+
+CREATE PROCEDURE login_shib_user (
+  p_email VARCHAR(30),
+  p_username VARCHAR(30)
+)
+this_procedure:BEGIN
+
+  DECLARE existing_user_key INT DEFAULT NULL;
+  DECLARE db_username VARCHAR(30);
+
+  SELECT user_key, username
+  INTO existing_user_key, db_username
+  FROM Users
+  WHERE email = p_email;
+
+  IF existing_user_key IS NOT NULL THEN
+    SELECT existing_user_key AS 'user_key',
+      db_username AS 'username',
+      p_email AS 'email';
+    LEAVE this_procedure;
+  END IF;
+
+  -- create new user record
+  INSERT INTO Users (
+    email,
+    username
+  )
+  VALUES (
+    p_email,
+    p_username
+  );
+  
+  SELECT LAST_INSERT_ID() AS 'user_key',
+    p_username AS 'username',
+    p_email AS 'email';
+
+END $$
+
 
 CREATE PROCEDURE edit_content (
   IN p_user_key INT,

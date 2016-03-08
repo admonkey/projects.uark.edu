@@ -15,6 +15,7 @@ include_once((__DIR__) . '/credentials.inc.php');
 
 // login with full path
 $login_page = "$path_web_root$login_page";
+$login_page = "javascript:save_this_page(\"$login_page\")";
 
 // custom functions
 function mysqlo_prepare_input($text){

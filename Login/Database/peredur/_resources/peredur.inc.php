@@ -41,7 +41,7 @@ if ($mysqli->connect_error) {
 
 function login($email, $password, $mysqli) {
     // Using prepared statements means that SQL injection is not possible. 
-    if ($stmt = $mysqli->prepare("SELECT user_id, username, password, salt 
+    if ($stmt = $mysqli->prepare("SELECT user_key, username, password, salt 
 				  FROM Users 
                                   WHERE email = ? LIMIT 1")) {
         $stmt->bind_param('s', $email);  // Bind "$email" to parameter.
@@ -49,7 +49,7 @@ function login($email, $password, $mysqli) {
         $stmt->store_result();
 
         // get variables from result.
-        $stmt->bind_result($user_id, $username, $db_password, $salt);
+        $stmt->bind_result($user_key, $username, $db_password, $salt);
         $stmt->fetch();
 
         // hash the password with the unique salt.
@@ -57,7 +57,7 @@ function login($email, $password, $mysqli) {
         if ($stmt->num_rows == 1) {
             // If the user exists we check if the account is locked
             // from too many login attempts 
-            if (checkbrute($user_id, $mysqli) == true) {
+            if (checkbrute($user_key, $mysqli) == true) {
                 // Account is locked 
                 // Send an email to user saying their account is locked 
                 return false;
@@ -70,8 +70,8 @@ function login($email, $password, $mysqli) {
                     $user_browser = $_SERVER['HTTP_USER_AGENT'];
 
                     // XSS protection as we might print this value
-                    $user_id = preg_replace("/[^0-9]+/", "", $user_id);
-                    $_SESSION['user_id'] = $user_id;
+                    $user_key = preg_replace("/[^0-9]+/", "", $user_key);
+                    $_SESSION['user_key'] = $user_key;
 
                     // XSS protection as we might print this value
                     $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username);
@@ -84,8 +84,8 @@ function login($email, $password, $mysqli) {
 		      SELECT group_name
 		      FROM `User_Groups` g
 		      INNER JOIN `User_Groups-link` l
-			ON g.group_id = l.group_id
-		      WHERE l.user_id = $user_id";
+			ON g.group_key = l.group_key
+		      WHERE l.user_key = $user_key";
 		    $result_groups = $mysqli->query($query_groups);
 		    $array_groups = array();
 		    while($row = $result_groups->fetch_array(MYSQLI_NUM)){
@@ -99,8 +99,8 @@ function login($email, $password, $mysqli) {
                     // Password is not correct 
                     // We record this attempt in the database 
                     $now = time();
-                    if (!$mysqli->query("INSERT INTO User_Login_Attempts(user_id, time) 
-                                    VALUES ('$user_id', '$now')")) {
+                    if (!$mysqli->query("INSERT INTO User_Login_Attempts(user_key, time) 
+                                    VALUES ('$user_key', '$now')")) {
                         header("Location: error.php?err=Database error: User_Login_Attempts");
                         exit();
                     }
@@ -119,7 +119,7 @@ function login($email, $password, $mysqli) {
     }
 }
 
-function checkbrute($user_id, $mysqli) {
+function checkbrute($user_key, $mysqli) {
     // Get timestamp of current time 
     $now = time();
 
@@ -128,8 +128,8 @@ function checkbrute($user_id, $mysqli) {
 
     if ($stmt = $mysqli->prepare("SELECT time 
                                   FROM User_Login_Attempts 
-                                  WHERE user_id = ? AND time > '$valid_attempts'")) {
-        $stmt->bind_param('i', $user_id);
+                                  WHERE user_key = ? AND time > '$valid_attempts'")) {
+        $stmt->bind_param('i', $user_key);
 
         // Execute the prepared query. 
         $stmt->execute();
@@ -150,8 +150,8 @@ function checkbrute($user_id, $mysqli) {
 
 function login_check($mysqli) {
     // Check if all session variables are set 
-    if (isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
-        $user_id = $_SESSION['user_id'];
+    if (isset($_SESSION['user_key'], $_SESSION['username'], $_SESSION['login_string'])) {
+        $user_key = $_SESSION['user_key'];
         $login_string = $_SESSION['login_string'];
         $username = $_SESSION['username'];
 
@@ -160,9 +160,9 @@ function login_check($mysqli) {
 
         if ($stmt = $mysqli->prepare("SELECT password 
 				      FROM Users 
-				      WHERE user_id = ? LIMIT 1")) {
-            // Bind "$user_id" to parameter. 
-            $stmt->bind_param('i', $user_id);
+				      WHERE user_key = ? LIMIT 1")) {
+            // Bind "$user_key" to parameter. 
+            $stmt->bind_param('i', $user_key);
             $stmt->execute();   // Execute the prepared query.
             $stmt->store_result();
 

@@ -1,7 +1,7 @@
-INSERT INTO Forum_Threads (thread_name, thread_createdby_user_id)
+INSERT INTO Forum_Threads (thread_name, thread_createdby_user_key)
   VALUES ('Hellow Orld!', 1),('A New Thread', 2);
 
-INSERT INTO Forum_Messages (message_text, message_thread_id, message_author_user_id)
+INSERT INTO Forum_Messages (message_text, message_thread_id, message_author_user_key)
   VALUES
 ('first message is very bland.', 1, 1),
 ('second message is still bland.', 1, 2),

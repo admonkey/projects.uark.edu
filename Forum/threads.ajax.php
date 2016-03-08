@@ -3,7 +3,7 @@
 /*
 // kick out users unless they are logged in
 sec_session_start();
-if (empty($_SESSION["user_id"])){
+if (empty($_SESSION["user_key"])){
   echo "<p class='bg-danger text-danger'>ERROR: Not Logged In</p>";
   die();
 }
@@ -22,13 +22,13 @@ if( !empty($mysqlo_connected) ){
 		mm.count_message_id,
 		mm.max_message_id,
 		m.message_creation_time,
-		m.message_author_user_id,
+		m.message_author_user_key,
 		u.username
 	FROM Forum_Threads t
 	JOIN Forum_Messages m
 		ON t.thread_id = m.message_thread_id
 	JOIN Users u
-		ON u.user_id = m.message_author_user_id
+		ON u.user_key = m.message_author_user_key
 	JOIN (
 	    SELECT message_thread_id,
 		MAX(message_id) AS max_message_id,

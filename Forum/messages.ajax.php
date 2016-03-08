@@ -11,7 +11,7 @@ if ( ! (isset($_GET["thread_id"]) && is_numeric($_GET["thread_id"])) ) {
 /*
 // kick out users unless they are logged in
 sec_session_start();
-if (empty($_SESSION["user_id"])){
+if (empty($_SESSION["user_key"])){
   echo "<p class='bg-danger text-danger'>ERROR: Not Logged In</p>";
   die();
 }

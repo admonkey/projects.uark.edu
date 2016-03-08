@@ -1,6 +1,6 @@
 -- users
 -- all passwords are Password1
-INSERT INTO `Users` (username,email,first_name,last_name,private,password,salt)
+INSERT INTO `Users` (username,email,first_name,last_name,private_profile,password,salt)
   VALUES (
     'john','john@example.com','John','Doe',0,
     '4ec69650aee849fdf9eabac27dc7f19c5428c06c3b9ba7823c44e4ca18d92f55151d298e8a2e9e4407dc77adb4fe03cdcf615bca2ae8284f199f9cc3848fa03f',
@@ -28,17 +28,17 @@ INSERT INTO `Users` (username,email,first_name,last_name,private,password,salt)
   );
 
 -- user groups
-INSERT INTO `User_Groups` (group_name,group_createdby_user_id) VALUES ('GUYS',2);
-INSERT INTO `User_Groups` (group_name,group_createdby_user_id) VALUES ('GIRLS',3);
+INSERT INTO `User_Groups` (group_name,group_createdby_user_key) VALUES ('GUYS',2);
+INSERT INTO `User_Groups` (group_name,group_createdby_user_key) VALUES ('GIRLS',3);
 
 -- user-group links
 -- admin
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (4,1);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (4,1);
 -- guys
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (2,2);
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (4,2);
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (5,2);
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (7,2);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (2,2);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (4,2);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (5,2);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (7,2);
 -- girls
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (3,3);
-INSERT INTO `User_Groups-link` (user_id,group_id) VALUES (6,3);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (3,3);
+INSERT INTO `User_Groups-link` (user_key,group_key) VALUES (6,3);

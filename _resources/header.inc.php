@@ -75,7 +75,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
 <div id="header-bg"></div>
 <div class="container" id="opener" role="banner">
   <a class="brand" href="http://www.uark.edu/">University of Arkansas</a>
-  <h1 id="site-heading" style="position: absolute; top: 27px; margin-left: 220px;"><span class="walton-name"><a href="<?php echo $path_web_root;?>"><?php echo $site_title;?></a></span></h1>
+  <h1 id="site-heading" style="position: absolute; top: 27px; margin-left: 220px;"><span class="walton-name"><a href="<?php echo $path_web_root;?>/"><?php echo $site_title;?></a></span></h1>
   <h4>&nbsp;</h4>
   <p id="site-heading" style="position: absolute; top: 85px; margin-left: 220px; font-size: 20px;"><span class="walton-sub-name"><a href="//walton.uark.edu">The Sam M. Walton College of Business</a></span></p>
 </div><!-- /#opener banner -->
@@ -148,7 +148,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
 		  ?>
 		  <?php
 		    if (isset($_SESSION["username"])) {
-		      echo "<li id='my_profile'><a href='$path_web_root/Profiles/?user_id=$_SESSION[user_id]'>$_SESSION[username]</a></li>";
+		      echo "<li id='my_profile'><a href='$path_web_root/Profiles/?user_key=$_SESSION[user_key]'>$_SESSION[username]</a></li>";
 		      echo "<li id='logout'><a href='?logout'>Logout</a></li>";
 		    }
 		    else

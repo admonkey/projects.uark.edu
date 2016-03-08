@@ -13,11 +13,11 @@ $include_mysqlo = true;
 require_once('_resources/header.inc.php');
 
 sec_session_start();
-if (empty($_SESSION["user_id"])){
+if (empty($_SESSION["user_key"])){
   echo "<p class='bg-danger text-danger'>ERROR: Not Logged In</p>";
   die();
 } else {
-  $user_id = $_SESSION["user_id"];
+  $user_key = $_SESSION["user_key"];
 }
 
 if (isset($_GET["restore"])) $deleted = 0;
@@ -29,7 +29,7 @@ else $deleted = 1;
 
 if( !empty($mysqlo_connected) ){
 
-    $sql="CALL Forum_proc_Delete_Message($user_id, $message_id, $deleted)";
+    $sql="CALL Forum_proc_Delete_Message($user_key, $message_id, $deleted)";
     $result = mysql_query($sql) or die(mysql_error());
 
     if ($deleted == 1)

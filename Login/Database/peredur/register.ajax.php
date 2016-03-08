@@ -51,7 +51,7 @@ if (isset($_POST['username'], $_POST['email'], $_POST['p'], $_POST['first_name']
     // breaking these rules.
     //
     
-    $prep_stmt = "SELECT user_id FROM Users WHERE email = ?";
+    $prep_stmt = "SELECT user_key FROM Users WHERE email = ?";
     $stmt = $mysqli->prepare($prep_stmt);
     
     if ($stmt) {

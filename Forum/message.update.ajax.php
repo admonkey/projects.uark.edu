@@ -20,18 +20,18 @@ $include_mysqlo = true;
 require_once('_resources/header.inc.php');
 
 sec_session_start();
-if (empty($_SESSION["user_id"])){
+if (empty($_SESSION["user_key"])){
   echo "<p class='bg-danger text-danger'>ERROR: Not Logged In</p>";
   die();
 } else {
-  $user_id = $_SESSION["user_id"];
+  $user_key = $_SESSION["user_key"];
 }
 
 if( !empty($mysqlo_connected) ){
 
 	$message_text = mysqlo_prepare_input($message_text);
 
-    $sql="CALL Forum_proc_Update_Message($user_id, $message_id, '$message_text')";
+    $sql="CALL Forum_proc_Update_Message($user_key, $message_id, '$message_text')";
     $result = mysql_query($sql) or die(mysql_error());
 
     include("message.read.inc.php");
