@@ -11,7 +11,7 @@ echo "<h1>$section_title</h1>";
 <p class='lead'>Make sure you have read <a href='rules.php'>the rules</a>.</p>
 
 <div id='page_controls' class='row'>
-  <div class='col-xs-4'><p><a id='show_list_of_projects' href='javascript:fetch_projects()' class='btn btn-primary'>Show Projects</a></p></div>
+  <div class='col-xs-4'><p><a btn-text='Projects' btn-show='true' id='show_list_of_projects' href='javascript:list_content(null, $("#list_of_projects_div"), $("#show_list_of_projects"))' class='btn btn-success'>Show Projects</a></p></div>
   <div class='col-xs-4'><p><a id='show_list_of_threads' href='javascript:fetch_threads()' class='btn btn-primary'>Show Threads</a></p></div>
   <?php if (isset($_SESSION["user_key"])) { ?>
     <div class='col-xs-4'><p><a href='javascript:create_thread()' class='btn btn-success'>Create New Thread</a></p></div>
@@ -33,6 +33,29 @@ echo "<h1>$section_title</h1>";
 
 
 <script>
+
+function isset(variable) {
+    return typeof variable !== typeof undefined ? true : false;
+}
+
+function list_content(parent_content_key, insert_div, toggle_btn){
+  if (insert_div.is(":hidden")) {
+    $.ajax({url: "list.content.ajax.php", 
+      success: function(result){
+	insert_div.html(result);
+	apply_tablesorter();
+	insert_div.show("blind")
+      }
+    });
+  } else insert_div.hide("blind");
+  if(isset(toggle_btn)){
+    if(toggle_btn.attr("btn-show") === "true"){
+      toggle_btn.text("Hide "+toggle_btn.attr("btn-text")).addClass("btn-warning").removeClass("btn-success").attr("btn-show", "false");
+    } else {
+      toggle_btn.text("Show "+toggle_btn.attr("btn-text")).removeClass("btn-warning").addClass("btn-success").attr("btn-show", "true");
+    }
+  }
+}
 
 function fetch_projects(){
   if ($("#list_of_projects_div").is(":hidden")) {

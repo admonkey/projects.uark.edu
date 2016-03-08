@@ -9,7 +9,7 @@ else
 
 if( !empty($mysqli_connected) ){
     
-  $result = $mysqli_connection->query("CALL fetch_children($parent_content_key)") or die($mysqli_connection->error());
+  $result = $mysqli_connection->query("CALL fetch_children($parent_content_key)") or die($mysqli_connection->error);
   $numfields = $result->field_count;
 
   // open table
@@ -32,7 +32,7 @@ if( !empty($mysqli_connected) ){
     echo "
       <tr>
 	<td>
-	  <content_data content_key='$row[content_key]' content_title='$row[content_title]' project_key='$row[project_key]' thread_key='$row[thread_key]' group_key='$row[group_key]' has_children='$row[has_children]'/>
+	  <content_data content_key='$row[content_key]' content_title='$row[content_title]' content_value='$row[content_value]' project_key='$row[project_key]' thread_key='$row[thread_key]' has_children='$row[has_children]'/>
 	  $row[content_title]
 	</td>
 	<td>$row[content_creation_time]</td>
