@@ -354,17 +354,14 @@ CREATE PROCEDURE fetch_children (
 )
 this_procedure:BEGIN
 
-  IF p_parent_content_key IS NULL THEN
-    SELECT *
-    FROM Content
-    WHERE parent_content_key IS NULL
-      AND content_deleted = FALSE;
-  ELSE
-    SELECT *
-    FROM Content
-    WHERE parent_content_key = p_parent_content_key
-      AND content_deleted = FALSE;  
-  END IF;
+  SELECT *
+  FROM Content
+  WHERE
+    IF(p_parent_content_key IS NULL,
+      parent_content_key IS NULL,
+      parent_content_key = p_parent_content_key
+    )
+    AND content_deleted = FALSE;
 
 END $$
 
