@@ -30,10 +30,7 @@ echo "<h1>$section_title</h1>";
 <div id='list_of_threads_div' class='table-responsive' style='display:none'>
 </div><!-- /#list_of_threads_div.table-responsive -->
 
-
-<div id='thread_div' class='well'>
-  <h2 id='thread_name_h2'>Click a thread to show messages.</h2>
-  <div id='thread_messages_div'></div>
+<div id='thread_div' class='well' style='display:none'>
 </div><!-- /#thread_div.well -->
 
 
