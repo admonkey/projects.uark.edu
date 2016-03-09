@@ -13,7 +13,7 @@ echo "<h1>$section_title</h1>";
 
 <div id='page_controls' class='row'>
   <div class='col-xs-4'><p><a btn-text='Projects' btn-show='true' id='show_list_of_projects' href='javascript:list_content(null, $("#list_of_projects_div"), $("#show_list_of_projects"))' class='btn btn-success'>Show Projects</a></p></div>
-  <div class='col-xs-4'><p><a id='show_list_of_threads' href='javascript:fetch_threads()' class='btn btn-primary'>Show Threads</a></p></div>
+  <!--<div class='col-xs-4'><p><a id='show_list_of_threads' href='javascript:fetch_threads()' class='btn btn-primary'>Show Threads</a></p></div>-->
   <?php if (isset($_SESSION["user_key"])) { ?>
     <div class='col-xs-4'><p><a href='javascript:create_thread()' class='btn btn-success'>Create New Thread</a></p></div>
   <?php } ?>
@@ -53,7 +53,7 @@ function toggle_button(toggle_btn){
 
 function list_content(parent_content_key, insert_div, toggle_btn){
   if (insert_div.is(":hidden")) {
-    $.ajax({url: "list.content.ajax.php", 
+    $.ajax({url: "list.content.ajax.php?parent_content_key="+parent_content_key,
       success: function(result){
 	insert_div.html(result);
 	apply_tablesorter();
@@ -79,14 +79,17 @@ function read_content(content_key, insert_div){
 }
 
 function hyperlink_row(){
-	$("tr").click( function() {
-		var row = $(this);
-		var content_key = row.find("content_data").attr("content_key");
-		read_content(content_key,$("#project_content_div"));
-		row.addClass("bg-primary").siblings().removeClass("bg-primary");
-	}).hover( function() {
-		$(this).toggleClass("hover");
-	});
+  $("tr").addClass("hover").click( function() {
+    var row = $(this);
+    var content_key = row.find("content_data").attr("content_key");
+    var thread_key = row.find("content_data").attr("thread_key");
+    if(! thread_key){
+      read_content(content_key,$("#project_content_div"));
+      list_content(content_key, $("#list_of_threads_div"));
+    } else
+      read_content(thread_key,$("#thread_div"));
+    row.addClass("bg-primary").siblings().removeClass("bg-primary");
+  });
 }
 
 function fetch_threads(){
