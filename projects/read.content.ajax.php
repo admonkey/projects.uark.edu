@@ -57,3 +57,4 @@ if( !empty($mysqli_connected) ){
 
 }
 ?>
+<?php if($_SERVER["SCRIPT_FILENAME"] === (__FILE__)) require_once("_resources/footer.inc.php");?>
