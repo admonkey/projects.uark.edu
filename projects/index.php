@@ -12,7 +12,7 @@ echo "<h1>$section_title</h1>";
 <p class='lead'>Make sure you have read <a href='rules.php'>the rules</a>.</p>
 
 <div id='page_controls' class='row'>
-  <div class='col-xs-4'><p><a btn-text='Projects' btn-show='true' id='show_list_of_projects' href='javascript:list_content(null, $("#list_of_projects_div"), $("#show_list_of_projects"))' class='btn btn-success'>Show Projects</a></p></div>
+  <div class='col-xs-4'><p><a btn-text='Projects' btn-show='false' id='show_list_of_projects' href='javascript:toggle_list($("#show_list_of_projects"), $("#list_of_projects_div"))' class='btn btn-warning'>Hide Projects</a></p></div>
   <!--<div class='col-xs-4'><p><a id='show_list_of_threads' href='javascript:fetch_threads()' class='btn btn-primary'>Show Threads</a></p></div>-->
   <?php if (isset($_SESSION["user_key"])) { ?>
     <div class='col-xs-4'><p><a href='javascript:create_thread()' class='btn btn-success'>Create New Thread</a></p></div>
@@ -43,16 +43,18 @@ function isset(variable) {
     return typeof variable !== typeof undefined ? true : false;
 }
 
-function toggle_button(toggle_btn){
+function toggle_list(toggle_btn, toggle_div){
   if(toggle_btn.attr("btn-show") === "true"){
+    toggle_div.show("blind");
     toggle_btn.text("Hide "+toggle_btn.attr("btn-text")).addClass("btn-warning").removeClass("btn-success").attr("btn-show", "false");
   } else {
+    toggle_div.hide("blind");
     toggle_btn.text("Show "+toggle_btn.attr("btn-text")).removeClass("btn-warning").addClass("btn-success").attr("btn-show", "true");
   }
 }
 
-function list_content(parent_content_key, insert_div, toggle_btn){
-  if (insert_div.is(":hidden")) {
+function list_content(parent_content_key, insert_div){
+  insert_div.hide("blind", function(){
     $.ajax({url: "list.content.ajax.php?parent_content_key="+parent_content_key,
       success: function(result){
 	insert_div.html(result);
@@ -60,10 +62,7 @@ function list_content(parent_content_key, insert_div, toggle_btn){
 	insert_div.show("blind");
       }
     });
-  } else insert_div.hide("blind");
-  if(isset(toggle_btn)){
-    toggle_button(toggle_btn);
-  }
+  });
 }
 
 function read_content(content_key, insert_div){
@@ -264,14 +263,7 @@ if (!isset($_SESSION["user_key"])) { ?>
 
 <?php } // END if (!isset($_SESSION["user_key"])) ?>
 
-<?php
-if ( !empty($_GET["thread_id"]) && is_numeric($_GET["thread_id"]) && $_GET["thread_id"] > 0 ) {?>
-<script>
-$(function(){
-  //fetch_messages(<?php echo $_GET["thread_id"] ?>,"",1);
-});
-</script>
-<?php }
-?>
-
 <?php require_once("_resources/footer.inc.php");?>
+<script>
+$(list_content(null, $("#list_of_projects_div")));
+</script>
