@@ -31,7 +31,8 @@ echo "<h1>$section_title</h1>"; ?>
   <li>
     Notes
     <ul>
-      <li><a href='$path_web_root/SubTree/'>SubTree</a></li>
+      <li><a href='$path_web_root/admin/php.php'>PHP</a></li>
+      <li><a href='$path_web_root/SubTree/'>git subtree</a></li>
     </ul>
   </li>
 
