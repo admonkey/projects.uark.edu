@@ -34,33 +34,6 @@ else {
 	}
 }
 
-
-// while debugging, go ahead and print out all the values,
-// remember to delete/comment-out this block when finished.
-$sql = "SELECT * FROM Votes";
-if( !empty($mysqli_connected) ){
-  $result = $mysqli_connection->query($sql) or die($mysqli_connection->error);
-}
-// print table header
-echo "<table border=1><thead><tr>";
-$cols = $result->fetch_fields();
-foreach ($cols as $col){
-  echo "<th>".$col->name."</th>";
-}
-// close table header, open body
-echo "</tr></thead><tbody>";
-// print table data
-while($row = $result->fetch_array(MYSQLI_NUM)){
-  echo "<tr>";
-  foreach($row as $val){
-    echo "<td>$val</td>";
-  }
-  echo "</tr>";
-}
-// close table
-echo "</tbody></table>";
-
-
 // require footer to close db connections
 require_once("_resources/footer.inc.php");
 ?>
