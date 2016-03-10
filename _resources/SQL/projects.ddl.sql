@@ -215,7 +215,7 @@ CREATE PROCEDURE create_content (
   p_content_createdby_user_key INT,
   p_parent_content_key INT,
   p_content_title VARCHAR(100),
-  p_content_value VARCHAR(100)
+  p_content_value VARCHAR(1000)
 )
 this_procedure:BEGIN
 
