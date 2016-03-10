@@ -9,13 +9,12 @@ include_fake_data=true
 
 # must be in proper order for drop/add with key relationships
 ddl_files=( \
-  "Forum/_resources/SQL/Forum.drop.sql"\
   "_resources/SQL/projects.ddl.sql"\
-  "Forum/_resources/SQL/Forum.ddl.sql"\
-  "Forum/_resources/SQL/Forum.procedures.sql"\
   "_resources/SQL/projects.seed.sql"
 )
-fake_data_files=("Forum/_resources/SQL/Forum.fakedata.sql")
+fake_data_files=(\
+  "projects/_resources/SQL/projects.fakedata.sql"
+)
 
 # move to working directory
 cd $( dirname "${BASH_SOURCE[0]}" )

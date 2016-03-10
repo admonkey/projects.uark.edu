@@ -1,33 +1,53 @@
 -- TABLES --
-DROP TABLE IF EXISTS Votes;
 DROP TABLE IF EXISTS Link_Groups_Content;
+DROP TABLE IF EXISTS Link_Groups_Users_History;
 DROP TABLE IF EXISTS Link_Groups_Users;
+DROP TABLE IF EXISTS Votes_History;
+DROP TABLE IF EXISTS Votes;
+DROP TABLE IF EXISTS Content_Editors_History;
+DROP TABLE IF EXISTS Content_Editors;
+DROP TABLE IF EXISTS Content_History;
 DROP TABLE IF EXISTS Content;
+DROP TABLE IF EXISTS Groups_History;
 DROP TABLE IF EXISTS Groups;
+DROP TABLE IF EXISTS Users_History;
 DROP TABLE IF EXISTS Users;
 
+
 CREATE TABLE IF NOT EXISTS Users (
-  user_key INT PRIMARY KEY AUTO_INCREMENT,
   email VARCHAR(30) NOT NULL UNIQUE,
   username VARCHAR(30) NOT NULL,
   profile_picture VARCHAR(200),
   private_profile BOOLEAN DEFAULT FALSE,
-  user_creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+  user_key INT PRIMARY KEY AUTO_INCREMENT,
+  user_creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  
+  user_edited_time TIMESTAMP NULL,
+  user_editedby_user_key INT,
+  FOREIGN KEY (user_editedby_user_key) REFERENCES Users(user_key),
+  user_deleted BOOLEAN DEFAULT FALSE
+);
+CREATE TABLE IF NOT EXISTS Users_History (
+  email VARCHAR(30) NOT NULL,
+  username VARCHAR(30) NOT NULL,
+  profile_picture VARCHAR(200),
+  private_profile BOOLEAN NOT NULL,
+
+  user_key INT NOT NULL,
+  user_creation_time TIMESTAMP NOT NULL,
+  
+  user_edited_time TIMESTAMP NULL,
+  user_editedby_user_key INT,
+  FOREIGN KEY (user_editedby_user_key) REFERENCES Users(user_key),
+  user_deleted BOOLEAN NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Groups (
-  group_key INT PRIMARY KEY AUTO_INCREMENT,
-  group_name VARCHAR(50) NOT NULL,
-  group_createdby_user_key INT NOT NULL,
-  FOREIGN KEY (group_createdby_user_key) REFERENCES Users(user_key),
-  group_creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE TABLE IF NOT EXISTS Content (
-  content_title VARCHAR(100), -- nullable for comments
-  content_value VARCHAR(1000), -- nullable for threads
+  content_title VARCHAR(100) NOT NULL,
+  content_value VARCHAR(1000) NOT NULL,
 
-  content_key INT PRIMARY KEY AUTO_INCREMENT,
   project_key INT,
   FOREIGN KEY (project_key) REFERENCES Content(content_key),
   thread_key INT,
@@ -38,11 +58,7 @@ CREATE TABLE IF NOT EXISTS Content (
   FOREIGN KEY (parent_content_key) REFERENCES Content(content_key),
   has_children BOOLEAN DEFAULT FALSE,
 
-  -- audit revision history of edits
-  original_content_key INT,
-  FOREIGN KEY (original_content_key) REFERENCES Content(content_key),
-  has_edits BOOLEAN DEFAULT FALSE,
-
+  content_key INT PRIMARY KEY AUTO_INCREMENT,
   content_creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   content_createdby_user_key INT NOT NULL,
   FOREIGN KEY (content_createdby_user_key) REFERENCES Users(user_key),
@@ -50,54 +66,116 @@ CREATE TABLE IF NOT EXISTS Content (
   content_edited_time TIMESTAMP NULL,
   content_editedby_user_key INT,
   FOREIGN KEY (content_editedby_user_key) REFERENCES Users(user_key),
+  content_deleted BOOLEAN DEFAULT FALSE
+);
+CREATE TABLE IF NOT EXISTS Content_History (
+  content_title VARCHAR(100) NOT NULL,
+  content_value VARCHAR(1000) NOT NULL,
+  
+  project_key INT,
+  FOREIGN KEY (project_key) REFERENCES Content(content_key),
+  thread_key INT,
+  FOREIGN KEY (thread_key) REFERENCES Content(content_key),
 
-  content_deleted_time TIMESTAMP NULL,
-  content_deletedby_user_key INT,
-  FOREIGN KEY (content_deletedby_user_key) REFERENCES Users(user_key)
+  parent_content_key INT,
+  FOREIGN KEY (parent_content_key) REFERENCES Content(content_key),
+  has_children BOOLEAN DEFAULT FALSE,
+
+  content_key INT NOT NULL,
+  content_creation_time TIMESTAMP NOT NULL,
+  content_createdby_user_key INT NOT NULL,
+  FOREIGN KEY (content_createdby_user_key) REFERENCES Users(user_key),
+
+  content_edited_time TIMESTAMP NULL,
+  content_editedby_user_key INT,
+  FOREIGN KEY (content_editedby_user_key) REFERENCES Users(user_key),
+  content_deleted BOOLEAN NOT NULL
 );
 
--- linking tables
-CREATE TABLE IF NOT EXISTS Link_Groups_Users (
-  group_key INT NOT NULL,
-  FOREIGN KEY (group_key) REFERENCES Groups(group_key),
-  user_key INT NOT NULL,
-  FOREIGN KEY (user_key) REFERENCES Users(user_key),
-  is_admin BOOLEAN DEFAULT FALSE,
-  group_user_creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (group_key,user_key)
-);
 
-CREATE TABLE IF NOT EXISTS Link_Groups_Content (
-  group_key INT NOT NULL,
-  FOREIGN KEY (group_key) REFERENCES Groups(group_key),
+CREATE TABLE IF NOT EXISTS Content_Editors (
   content_key INT NOT NULL,
   FOREIGN KEY (content_key) REFERENCES Content(content_key),
-  PRIMARY KEY (group_key,content_key)
+  user_key INT NOT NULL,
+  FOREIGN KEY (user_key) REFERENCES Users(user_key),
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+  
+  PRIMARY KEY (content_key,user_key),
+  content_editor_creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  content_editor_createdby_user_key INT NOT NULL,
+  FOREIGN KEY (content_editor_createdby_user_key) REFERENCES Users(user_key),
+
+  content_editor_edited_time TIMESTAMP NULL,
+  content_editor_editedby_user_key INT,
+  FOREIGN KEY (content_editor_editedby_user_key) REFERENCES Users(user_key),
+  content_editor_deleted BOOLEAN DEFAULT FALSE
+);
+CREATE TABLE IF NOT EXISTS Content_Editors_History (
+  content_key INT NOT NULL,
+  FOREIGN KEY (content_key) REFERENCES Content(content_key),
+  user_key INT NOT NULL,
+  FOREIGN KEY (user_key) REFERENCES Users(user_key),
+  is_admin BOOLEAN NOT NULL,
+  
+  content_editor_creation_time TIMESTAMP,
+  content_editor_createdby_user_key INT NOT NULL,
+  FOREIGN KEY (content_editor_createdby_user_key) REFERENCES Users(user_key),
+
+  content_editor_edited_time TIMESTAMP NULL,
+  content_editor_editedby_user_key INT,
+  FOREIGN KEY (content_editor_editedby_user_key) REFERENCES Users(user_key),
+  content_editor_deleted BOOLEAN NOT NULL
 );
 
--- votes
+
 CREATE TABLE IF NOT EXISTS Votes (
+  vote_value TINYINT NOT NULL, -- downvote = -1, upvote = 1, inappropriate flag = -2
+  
   content_key INT NOT NULL,
   FOREIGN KEY (content_key) REFERENCES Content(content_key),
   user_key INT NOT NULL,
   FOREIGN KEY (user_key) REFERENCES Users(user_key),
+  
+  vote_creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (content_key,user_key)
+);
+CREATE TABLE IF NOT EXISTS Votes_History (
   vote_value TINYINT NOT NULL, -- downvote = -1, upvote = 1, inappropriate flag = -2
-  vote_creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-  -- in app, don't allow people to send duplicate vote on current, but changes are OK
+  
+  content_key INT NOT NULL,
+  FOREIGN KEY (content_key) REFERENCES Content(content_key),
+  user_key INT NOT NULL,
+  FOREIGN KEY (user_key) REFERENCES Users(user_key),
+  
+  vote_creation_time TIMESTAMP NOT NULL
 );
 
 -- STORED PROCEDURES --
+-- old
+DROP FUNCTION IF EXISTS create_new_content_key;
+DROP PROCEDURE IF EXISTS edit_content;
+DROP FUNCTION IF EXISTS create_project;
+DROP PROCEDURE IF EXISTS fetch_projects;
+DROP PROCEDURE IF EXISTS fetch_project;
+DROP PROCEDURE IF EXISTS fetch_threads;
+DROP PROCEDURE IF EXISTS fetch_thread;
+DROP FUNCTION IF EXISTS create_thread;
+DROP FUNCTION IF EXISTS create_comment;
+DROP PROCEDURE IF EXISTS fetch_comment;
+-- current
+DROP PROCEDURE IF EXISTS login_shib_user;
+DROP PROCEDURE IF EXISTS create_content;
+DROP PROCEDURE IF EXISTS update_content;
+DROP PROCEDURE IF EXISTS fetch_children;
+DROP PROCEDURE IF EXISTS read_content;
+-- TODO:
+DROP PROCEDURE IF EXISTS delete_content;
+
 DELIMITER $$
 
--- DROP PROCEDURE IF EXISTS create_project;
--- DROP PROCEDURE IF EXISTS create_content;
-
-DROP PROCEDURE IF EXISTS login_shib_user;
-DROP PROCEDURE IF EXISTS edit_content;
-
 CREATE PROCEDURE login_shib_user (
-  p_email VARCHAR(30),
-  p_username VARCHAR(30)
+  IN p_email VARCHAR(30),
+  IN p_username VARCHAR(30)
 )
 this_procedure:BEGIN
 
@@ -133,81 +211,222 @@ this_procedure:BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_content (
-  IN p_user_key INT,
-  IN p_content_key INT,
-  IN p_content_title VARCHAR(100),
-  IN p_content_value VARCHAR(1000)
+CREATE PROCEDURE create_content (
+  p_content_createdby_user_key INT,
+  p_parent_content_key INT,
+  p_content_title VARCHAR(100),
+  p_content_value VARCHAR(100)
 )
 this_procedure:BEGIN
 
-  DECLARE valid_content_key INT DEFAULT NULL;
-  DECLARE p_project_key INT;
-  DECLARE p_thread_key INT;
-  DECLARE p_parent_content_key INT;
-  DECLARE p_original_content_key INT;
-  DECLARE p_has_children BOOLEAN;
-  DECLARE p_content_createdby_user_key INT;
-  DECLARE p_content_creation_time TIMESTAMP;
+  DECLARE valid_content_createdby_user_key INT DEFAULT NULL;
+  DECLARE valid_parent_content_key INT DEFAULT NULL;
+  DECLARE new_content_title VARCHAR(100) DEFAULT NULL;
+  DECLARE new_content_key INT DEFAULT NULL;
+  DECLARE parent_project_key INT DEFAULT NULL;
+  DECLARE parent_thread_key INT DEFAULT NULL;
 
-  -- get old values
-  SELECT content_key,
-    project_key,
-    thread_key,
-    parent_content_key,
-    original_content_key,
-    has_children,
+  -- parameter validation
+  IF
+    p_parent_content_key IS NULL
+    AND p_content_title IS NULL
+  THEN
+    SELECT 'p_parent_content_key & p_content_title cannot be null' AS 'ERROR';
+    LEAVE this_procedure;
+  END IF;
+
+  SELECT user_key
+  INTO valid_content_createdby_user_key
+  FROM Users
+  WHERE user_key = p_content_createdby_user_key;
+  IF valid_content_createdby_user_key IS NULL THEN
+    SELECT 'invalid p_content_createdby_user_key' AS 'ERROR';
+    LEAVE this_procedure;
+  END IF;
+
+  IF p_parent_content_key IS NOT NULL THEN
+    SELECT content_key, LEFT(CONCAT('RE: ',content_title),100),
+      project_key, thread_key
+    INTO valid_parent_content_key, new_content_title,
+      parent_project_key, parent_thread_key
+    FROM Content
+    WHERE content_key = p_parent_content_key
+      AND content_deleted = FALSE;
+    IF valid_parent_content_key IS NULL THEN
+      SELECT 'invalid p_parent_content_key' AS 'ERROR';
+      LEAVE this_procedure;
+    ELSE
+      UPDATE Content
+      SET has_children = TRUE
+      WHERE content_key = valid_parent_content_key;
+    END IF;
+  END IF;
+
+  IF p_content_title IS NOT NULL THEN
+    SET new_content_title = p_content_title;
+  END IF;
+
+  -- create record
+  INSERT INTO Content (
     content_createdby_user_key,
-    content_creation_time
-  INTO valid_content_key,
-    p_project_key,
-    p_thread_key,
-    p_parent_content_key,
-    p_original_content_key,
-    p_has_children,
-    p_content_createdby_user_key,
-    p_content_creation_time
+    parent_content_key,
+    content_title,
+    content_value,
+    project_key,
+    thread_key
+  )
+  VALUES (
+    valid_content_createdby_user_key,
+    valid_parent_content_key,
+    new_content_title,
+    p_content_value,
+    parent_project_key,
+    parent_thread_key
+  );
+  SET new_content_key = LAST_INSERT_ID();
+
+  -- pseudo indexes
+  IF parent_thread_key IS NULL THEN
+    IF parent_project_key IS NULL THEN
+      SET parent_project_key = new_content_key;
+    ELSE
+      SET parent_thread_key = new_content_key;
+    END IF;
+    UPDATE Content
+    SET project_key = parent_project_key,
+	thread_key = parent_thread_key
+    WHERE content_key = new_content_key;
+  END IF;
+
+  -- create security group
+  INSERT INTO Content_Editors (
+    content_key,
+    user_key,
+    is_admin,
+    content_editor_createdby_user_key
+  ) VALUES (
+    new_content_key,
+    valid_content_createdby_user_key,
+    TRUE,
+    valid_content_createdby_user_key
+  );
+
+END $$
+
+
+CREATE PROCEDURE read_content (
+  IN p_content_key INT
+)
+this_procedure:BEGIN
+
+  SELECT c.*,
+    uc.username AS 'content_createdby_username',
+    ue.username AS 'content_editedby_username'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Users ue
+    ON c.content_editedby_user_key = ue.user_key
+  WHERE
+    content_key = p_content_key
+    AND content_deleted = FALSE;
+
+END $$
+
+
+CREATE PROCEDURE fetch_children (
+  IN p_parent_content_key INT
+)
+this_procedure:BEGIN
+
+  SELECT c.*,
+    uc.username AS 'content_createdby_username',
+    ue.username AS 'content_editedby_username'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Users ue
+    ON c.content_editedby_user_key = ue.user_key
+  WHERE
+    IF(p_parent_content_key IS NULL,
+      parent_content_key IS NULL,
+      parent_content_key = p_parent_content_key
+    )
+    AND content_key > 0
+    AND content_deleted = FALSE;
+
+END $$
+
+
+CREATE PROCEDURE update_content (
+  IN p_user_key INT,
+  IN p_content_key INT,
+  IN p_content_title VARCHAR(100),
+  IN p_content_value VARCHAR(1000),
+  IN p_content_deleted BOOLEAN
+)
+this_procedure:BEGIN
+
+  -- validate content exists
+  DECLARE valid_content_key INT DEFAULT NULL;
+  SELECT content_key INTO valid_content_key
   FROM Content
   WHERE content_key = p_content_key;
-  
-  -- validate content exists
   IF valid_content_key IS NULL THEN
     SELECT 'content key does not exist' AS 'ERROR';
     LEAVE this_procedure;
   END IF;
-  
-  -- mark old content as edited
-  UPDATE Content
-  SET has_edits = TRUE
-  WHERE content_key = valid_content_key;
-  
-  -- insert new content
-  INSERT INTO Content (
+
+  -- copy current record to history table
+  INSERT INTO Content_History (
     content_title,
     content_value,
     project_key,
     thread_key,
+    group_key,
     parent_content_key,
     has_children,
-    original_content_key,
+    content_key,
     content_creation_time,
     content_createdby_user_key,
     content_edited_time,
-    content_editedby_user_key
-  )
-  VALUES (
-    p_content_title,
-    p_content_value,
-    p_project_key,
-    p_thread_key,
-    p_parent_content_key,
-    p_has_children,
-    p_original_content_key,
-    p_content_creation_time,
-    p_content_createdby_user_key,
-    CURRENT_TIMESTAMP,
-    p_user_key
-  );
+    content_editedby_user_key,
+    content_deleted
+  ) SELECT
+    content_title,
+    content_value,
+    project_key,
+    thread_key,
+    group_key,
+    parent_content_key,
+    has_children,
+    content_key,
+    content_creation_time,
+    content_createdby_user_key,
+    content_edited_time,
+    content_editedby_user_key,
+    content_deleted
+  FROM Content
+  WHERE content_key = p_content_key;
+
+  -- update current record
+  IF p_content_title IS NOT NULL THEN
+    UPDATE Content
+    SET content_title = p_content_title
+    WHERE content_key = p_content_key;
+  END IF;
+
+  IF p_content_value IS NOT NULL THEN
+    UPDATE Content
+    SET content_value = p_content_value
+    WHERE content_key = p_content_key;
+  END IF;
+
+  IF p_content_deleted IS NOT NULL THEN
+    UPDATE Content
+    SET content_deleted = p_content_deleted
+    WHERE content_key = p_content_key;
+  END IF;
 
 END $$
 
