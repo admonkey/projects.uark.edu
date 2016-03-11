@@ -29,7 +29,7 @@ if( !empty($mysqli_connected) ){
   // data
   while ($row = $result->fetch_assoc())
     echo "
-      <tr>
+      <tr class='hover' onclick='click_row($(this))'>
 	<td>
 	  <content_data
 	    project_key='$row[project_key]'
@@ -53,10 +53,6 @@ if( !empty($mysqli_connected) ){
     echo "
 	</tbody>
       </table>
-      
-      <script>
-	$(hyperlink_row());
-      </script>
     ";
 
 } else {
