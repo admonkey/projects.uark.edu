@@ -2,7 +2,6 @@
 
 $include_jquery_ui = true;
 $include_tablesorter = true;
-$include_mysqlo = true;
 $include_mysqli = true;
 require_once("_resources/header.inc.php");
 
@@ -74,18 +73,15 @@ function read_content(content_key, insert_div){
   });
 }
 
-function hyperlink_row(){
-  $("tr").addClass("hover").click( function() {
-    var row = $(this);
-    var content_key = row.find("content_data").attr("content_key");
-    var thread_key = row.find("content_data").attr("thread_key");
-    if(! thread_key){
-      read_content(content_key,$("#project_content_div"));
-      list_content(content_key, $("#list_of_threads_div"));
-    } else
-      read_content(thread_key,$("#thread_div"));
-    row.addClass("bg-primary").siblings().removeClass("bg-primary");
-  });
+function click_row(tr){
+  var content_key = tr.find("content_data").attr("content_key");
+  var thread_key = tr.find("content_data").attr("thread_key");
+  if(! thread_key){
+    read_content(content_key,$("#project_content_div"));
+    list_content(content_key, $("#list_of_threads_div"));
+  } else
+    read_content(thread_key,$("#thread_div"));
+  tr.addClass("bg-primary").siblings().removeClass("bg-primary");
 }
 
 function fetch_threads(){
