@@ -174,6 +174,45 @@ function reply_content(parent_content_key){
   });
 }
 
+function show_content_editor(element, cancel){
+  var content_editor_well = element.closest(".content_container").find(".content_editor_well");
+  if (cancel) {
+    message_editor_well.hide("slide", function(){
+      message_editor_well.html("");
+    });
+  } else {
+    var content_editor = $("#message_editor").clone();
+    auto_expand_textarea(content_editor.find("textarea"));
+    //message_editor.find("[name=message_id]").val(element.parents(".message_metadata").find("message_data").attr("message_id"));
+    //message_editor.find("textarea").val(message_body_well.find(".message_text").prop("innerHTML").replace(/<br>/g, ""));
+    content_editor_well.hide("slide", function(){
+      content_editor_well.html(content_editor.show());
+      content_editor_well.show("slide");
+    });
+  }
+}
+
+
+// old Forum javascript ///////////////////////////////////////////////////////////////////////////
+
+function show_editor(element, cancel){
+  var message_editor_well = element.parents(".message_wrapper").find(".message_editor_well");
+  var message_body_well = element.parents(".message_wrapper").find(".message_body_well");
+  if (cancel) {
+    message_editor_well.hide("slide", function(){
+		      message_editor_well.html("");
+		      message_body_well.show("slide");
+	      });
+  } else {
+    var message_editor = $("#message_editor").clone();
+	      auto_expand_textarea(message_editor.find("textarea"));
+    message_editor.find("[name=message_id]").val(element.parents(".message_metadata").find("message_data").attr("message_id"));
+    message_editor.find("textarea").val(message_body_well.find(".message_text").prop("innerHTML").replace(/<br>/g, ""));
+	      message_editor_well.html(message_editor.show());
+    message_body_well.hide("slide", function(){message_editor_well.show("slide")});
+  }
+}
+
 function fetch_threads(){
 	if ($("#list_of_threads_div").is(":hidden")) {
 		$.ajax({url: "threads.ajax.php", 
@@ -233,24 +272,6 @@ function message_submit() {
 		disable_create_thread();
 	});
 	return false;
-}
-
-function show_editor(element, cancel){
-  var message_editor_well = element.parents(".message_wrapper").find(".message_editor_well");
-  var message_body_well = element.parents(".message_wrapper").find(".message_body_well");
-  if (cancel) {
-    message_editor_well.hide("slide", function(){
-		      message_editor_well.html("");
-		      message_body_well.show("slide");
-	      });
-  } else {
-    var message_editor = $("#message_editor").clone();
-	      auto_expand_textarea(message_editor.find("textarea"));
-    message_editor.find("[name=message_id]").val(element.parents(".message_metadata").find("message_data").attr("message_id"));
-    message_editor.find("textarea").val(message_body_well.find(".message_text").prop("innerHTML").replace(/<br>/g, ""));
-	      message_editor_well.html(message_editor.show());
-    message_body_well.hide("slide", function(){message_editor_well.show("slide")});
-  }
 }
 
 function update_message_submit(element) {
