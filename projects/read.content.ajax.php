@@ -13,9 +13,16 @@ if( !empty($mysqli_connected) ){
 
   $row = $result->fetch_assoc();
   
+  echo "<div class='content_container well'>";
+  
+  if ($row["content_key"] === $row["project_key"])
+    echo "<h1>$row[content_title]</h1>";
+  elseif ($row["content_key"] === $row["thread_key"])
+    echo "<h2>$row[content_title]</h2>";
+  else
+    echo "<h3>$row[content_title]</h3>";
+
   echo "
-    <h1>$row[content_title]</h1>
-    
     <p>
       <label class='label label-primary'>
 	<a href='$path_web_root/Profiles/?user_key=$row[content_createdby_user_key]'>$row[content_createdby_username]</a>
@@ -47,6 +54,8 @@ if( !empty($mysqli_connected) ){
       content_createdby_user_key='$row[content_createdby_user_key]'
       content_editedby_user_key='$row[content_editedby_user_key]'
     />
+    <div class='children_container'></div>
+  </div>
   ";
 
 } else {
