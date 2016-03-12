@@ -161,6 +161,10 @@ function click_row(tr){
   tr.addClass("bg-primary").siblings().removeClass("bg-primary");
 }
 
+function reply_content(){
+
+}
+
 function fetch_threads(){
 	if ($("#list_of_threads_div").is(":hidden")) {
 		$.ajax({url: "threads.ajax.php", 

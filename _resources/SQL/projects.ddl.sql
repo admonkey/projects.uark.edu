@@ -171,6 +171,7 @@ DROP PROCEDURE IF EXISTS read_content;
 DROP PROCEDURE IF EXISTS get_content;
 DROP PROCEDURE IF EXISTS create_vote;
 DROP PROCEDURE IF EXISTS test_proc;
+DROP PROCEDURE IF EXISTS create_reply;
 -- TODO:
 DROP PROCEDURE IF EXISTS delete_content;
 
@@ -213,6 +214,16 @@ this_procedure:BEGIN
 
 END $$
 
+CREATE PROCEDURE create_reply(
+  p_content_createdby_user_key INT,
+  p_parent_content_key INT,
+  p_content_value VARCHAR(1000)
+)
+this_procedure:BEGIN
+
+  CALL create_content(p_content_createdby_user_key,p_parent_content_key,NULL,p_content_value);
+
+END $$
 
 CREATE PROCEDURE create_content (
   p_content_createdby_user_key INT,
