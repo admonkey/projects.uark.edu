@@ -5,7 +5,7 @@ $include_tablesorter = true;
 $include_mysqli = true;
 require_once("_resources/header.inc.php");
 
-echo "<h1>$section_title</h1>";
+if(empty($_GET["content_key"])) echo "<h1>$section_title</h1>";
 
 ?>
 <p class='lead'>Make sure you have read <a href='rules.php'>the rules</a>.</p>
@@ -26,11 +26,13 @@ echo "<h1>$section_title</h1>";
 <?php if(!empty($_GET["content_key"])) include("read.content.ajax.php"); ?>
 </div><!-- /#list_of_projects_div.table-responsive -->
 
+<div class='well'>
 <div id='list_of_threads_div' class='table-responsive' style='display:none'>
 </div><!-- /#list_of_threads_div.table-responsive -->
 
 <div id='thread_div' style='display:none'>
 </div><!-- /#thread_div.well -->
+</div>
 
 <?php
 if (!isset($_SESSION["user_key"])) { ?>
@@ -273,5 +275,7 @@ function delete_message(message_id, element, undo){
 }
 
 $(fetch_content_table(null, $("#list_of_projects_div")));
+
+<?php if(!empty($_GET["content_key"])) echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));"; ?>
 
 </script>
