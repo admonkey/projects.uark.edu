@@ -73,7 +73,7 @@ if (!isset($_SESSION["user_key"])) { ?>
       <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='message_text' required></textarea>
     </div>
     <a href='javascript:void(0)' onclick='update_message_submit($(this))' class='btn btn-primary'>Submit</a>
-    <a href='javascript:void(0)' onclick='show_editor($(this), true)' class='btn btn-danger'>Cancel</a>
+    <a href='javascript:void(0)' onclick='show_content_editor($(this), true)' class='btn btn-danger'>Cancel</a>
   </form>
 </div><!-- /#message_editor -->
 
@@ -177,8 +177,8 @@ function reply_content(parent_content_key){
 function show_content_editor(element, cancel){
   var content_editor_well = element.closest(".content_container").find(".content_editor_well");
   if (cancel) {
-    message_editor_well.hide("slide", function(){
-      message_editor_well.html("");
+    content_editor_well.hide("slide", function(){
+      content_editor_well.html("");
     });
   } else {
     var content_editor = $("#message_editor").clone();
