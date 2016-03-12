@@ -124,7 +124,7 @@ function fetch_content_table(parent_content_key, insert_div){
 
 function fetch_content_list(parent_content_key, insert_div){
   insert_div.hide("blind", function(){
-    $.ajax({url: "list.content.ajax.php?parent_content_key="+parent_content_key,
+    $.ajax({url: "list.content.ajax.php?list&parent_content_key="+parent_content_key,
       success: function(result){
 	insert_div.html(result);
 	apply_tablesorter();
