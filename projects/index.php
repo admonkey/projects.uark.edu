@@ -162,7 +162,7 @@ function click_row(tr){
 }
 
 function reply_content(){
-
+  alert("reply!");
 }
 
 function fetch_threads(){

@@ -31,5 +31,7 @@ echo "
     content_createdby_user_key='$row[content_createdby_user_key]'
     content_editedby_user_key='$row[content_editedby_user_key]'
   />
+  
+  <p><label class='label label-primary'><a href='javascript:void(0)' onclick='reply_content()'>Reply</a></label></p>
 ";
 ?>
