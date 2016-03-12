@@ -18,7 +18,17 @@ if( !empty($mysqli_connected) ){
 
       include("get.content.inc.php");
       
-      echo "</div>";
+      if(!empty($row["has_children"]))
+	echo "
+	  <a href='javascript:void(0)' onclick='fetch_content_list($row[content_key], $(this).parent().find(\".children_container\"))'>
+	    <label class='label label-success'>
+	    
+	      <i class='fa fa-plus-circle'></i> Show Replies
+	    
+	    </label>
+	  </a>";
+      
+      echo "<div class='children_container' style='margin-top:10px'></div></div>";
     }
 
   } else { // END IF list, BEGIN IF table

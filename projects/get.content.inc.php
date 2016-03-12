@@ -31,6 +31,5 @@ echo "
     content_createdby_user_key='$row[content_createdby_user_key]'
     content_editedby_user_key='$row[content_editedby_user_key]'
   />
-  <div class='children_container'></div>
 ";
 ?>

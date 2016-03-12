@@ -24,7 +24,7 @@ if( !empty($mysqli_connected) ){
   
   include("get.content.inc.php");
   
-  echo "</div>";
+  echo "<div class='children_container' style='margin-top:10px'></div></div>";
 
 } else {
 
