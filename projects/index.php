@@ -108,6 +108,7 @@ function toggle_list(toggle_btn, toggle_div){
 
 function list_content(parent_content_key, insert_div){
   insert_div.hide("blind", function(){
+    $("#thread_div").hide("blind");
     $.ajax({url: "list.content.ajax.php?parent_content_key="+parent_content_key,
       success: function(result){
 	insert_div.html(result);
