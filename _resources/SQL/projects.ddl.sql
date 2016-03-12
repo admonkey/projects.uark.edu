@@ -344,6 +344,20 @@ this_procedure:BEGIN
     )
     AND content_deleted = FALSE;
 
+--   -- read content
+--   WHERE
+--     content_key = p_content_key
+--     AND content_deleted = FALSE;
+--   
+--   -- fetch_children
+--   WHERE
+--     IF(p_parent_content_key IS NULL,
+--       parent_content_key IS NULL,
+--       parent_content_key = p_parent_content_key
+--     )
+--     AND content_key > 0
+--     AND content_deleted = FALSE;
+
 END $$
 
 CREATE PROCEDURE read_content (
@@ -351,17 +365,7 @@ CREATE PROCEDURE read_content (
 )
 this_procedure:BEGIN
 
-  SELECT c.*,
-    uc.username AS 'content_createdby_username',
-    ue.username AS 'content_editedby_username'
-  FROM Content c
-  LEFT JOIN Users uc
-    ON c.content_createdby_user_key = uc.user_key
-  LEFT JOIN Users ue
-    ON c.content_editedby_user_key = ue.user_key
-  WHERE
-    content_key = p_content_key
-    AND content_deleted = FALSE;
+  CALL get_content(p_content_key,FALSE);
 
 END $$
 
@@ -371,21 +375,7 @@ CREATE PROCEDURE fetch_children (
 )
 this_procedure:BEGIN
 
-  SELECT c.*,
-    uc.username AS 'content_createdby_username',
-    ue.username AS 'content_editedby_username'
-  FROM Content c
-  LEFT JOIN Users uc
-    ON c.content_createdby_user_key = uc.user_key
-  LEFT JOIN Users ue
-    ON c.content_editedby_user_key = ue.user_key
-  WHERE
-    IF(p_parent_content_key IS NULL,
-      parent_content_key IS NULL,
-      parent_content_key = p_parent_content_key
-    )
-    AND content_key > 0
-    AND content_deleted = FALSE;
+  CALL get_content(p_parent_content_key,TRUE);
 
 END $$
 
@@ -461,5 +451,30 @@ this_procedure:BEGIN
   END IF;
 
 END $$
+
+CREATE PROCEDURE create_vote (
+  IN p_user_key INT
+)
+
+this_procedure:BEGIN
+
+  DECLARE existing_vote_value INT DEFAULT NULL;
+  DECLARE valid_number INT DEFAULT NULL;
+  DECLARE existing_vote_time TIMESTAMP DEFAULT NULL;
+  DECLARE user_key_check    INT DEFAULT NULL;
+  DECLARE content_key_check INT DEFAULT NULL;
+  DECLARE content_status    INT DEFAULT NULL;
+  
+  -- validate user_key
+  -- validate content_key
+  -- validate vote_value value (either -2, -1, or 1)
+  -- count the user_key and content_key (should be 1) and exit the stored procedure if not.
+  
+  
+    select user_key into user_key_check from Users where user_key = p_user_key;
+        select user_key_check;
+
+END $$
+
 
 DELIMITER ;
