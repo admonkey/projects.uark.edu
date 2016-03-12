@@ -168,6 +168,7 @@ DROP PROCEDURE IF EXISTS create_content;
 DROP PROCEDURE IF EXISTS update_content;
 DROP PROCEDURE IF EXISTS fetch_children;
 DROP PROCEDURE IF EXISTS read_content;
+DROP PROCEDURE IF EXISTS get_content;
 -- TODO:
 DROP PROCEDURE IF EXISTS delete_content;
 
@@ -313,6 +314,35 @@ this_procedure:BEGIN
 
 END $$
 
+
+CREATE PROCEDURE get_content (
+  IN p_content_key INT,
+  IN children BOOLEAN
+)
+this_procedure:BEGIN
+
+  SELECT c.*,
+    uc.username AS 'content_createdby_username',
+    ue.username AS 'content_editedby_username'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Users ue
+    ON c.content_editedby_user_key = ue.user_key
+  WHERE
+    
+    IF(children = TRUE,
+      IF(p_content_key IS NULL,
+	parent_content_key IS NULL,
+	parent_content_key = p_content_key
+      )
+      AND content_key > 0,
+    -- else
+      content_key = p_content_key
+    )
+    AND content_deleted = FALSE;
+
+END $$
 
 CREATE PROCEDURE read_content (
   IN p_content_key INT
