@@ -87,6 +87,9 @@ if (!isset($_SESSION["user_key"])) { ?>
   .message_metadata {
     float: right;
   }
+  label {
+    margin-right: 5px;
+  }
 </style>
 
 
