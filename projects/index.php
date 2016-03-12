@@ -106,7 +106,7 @@ function toggle_list(toggle_btn, toggle_div){
   }
 }
 
-function list_content(parent_content_key, insert_div){
+function fetch_content_table(parent_content_key, insert_div){
   insert_div.hide("blind", function(){
     $("#thread_div").hide("blind");
     $.ajax({url: "list.content.ajax.php?parent_content_key="+parent_content_key,
@@ -119,13 +119,27 @@ function list_content(parent_content_key, insert_div){
   });
 }
 
-function read_content(content_key, insert_div){
+function fetch_content_list(parent_content_key, insert_div){
+  insert_div.hide("blind", function(){
+    $.ajax({url: "list.content.ajax.php?parent_content_key="+parent_content_key,
+      success: function(result){
+	insert_div.html(result);
+	apply_tablesorter();
+	insert_div.show("blind");
+      }
+    });
+  });
+}
+
+function fetch_content(content_key, insert_div){
   insert_div.hide("blind", function(){
     $.ajax({url: "read.content.ajax.php?content_key="+content_key, 
       success: function(result){
 	insert_div.html(result);
 	insert_div.show("blind");
 	history.pushState({}, null, "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
+	if(insert_div.is($("#thread_div")))
+	  fetch_content_list(content_key, $("#thread_div").find(".children_container"));
       }
     });
   });
@@ -135,10 +149,10 @@ function click_row(tr){
   var content_key = tr.find("content_data").attr("content_key");
   var thread_key = tr.find("content_data").attr("thread_key");
   if(! thread_key){
-    read_content(content_key,$("#project_content_div"));
-    list_content(content_key, $("#list_of_threads_div"));
+    fetch_content(content_key,$("#project_content_div"));
+    fetch_content_table(content_key, $("#list_of_threads_div"));
   } else
-    read_content(thread_key,$("#thread_div"));
+    fetch_content(thread_key,$("#thread_div"));
   tr.addClass("bg-primary").siblings().removeClass("bg-primary");
 }
 
@@ -255,6 +269,6 @@ function delete_message(message_id, element, undo){
 	}
 }
 
-$(list_content(null, $("#list_of_projects_div")));
+$(fetch_content_table(null, $("#list_of_projects_div")));
 
 </script>
