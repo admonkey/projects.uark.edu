@@ -161,8 +161,17 @@ function click_row(tr){
   tr.addClass("bg-primary").siblings().removeClass("bg-primary");
 }
 
-function reply_content(){
-  alert("reply!");
+function reply_content(parent_content_key){
+  $.ajax({url: "reply.content.ajax.php?content_value=javaplied&parent_content_key="+parent_content_key,
+    success: function(result){
+      alert("success");
+      /*
+      insert_div.html(result);
+      apply_tablesorter();
+      insert_div.show("blind");
+      */
+    }
+  });
 }
 
 function fetch_threads(){
