@@ -32,6 +32,63 @@ echo "<h1>$section_title</h1>";
 <div id='thread_div' class='well' style='display:none'>
 </div><!-- /#thread_div.well -->
 
+<?php
+if (!isset($_SESSION["user_key"])) { ?>
+
+	<p><a href='<?php echo $login_page ?>' class='btn btn-danger'>Not Logged In</a></p>
+
+<?php } else { ?>
+
+<!-- post message text area -->
+<div id='message_div' class='well' style='display:none'>
+
+	<form id='message_form' method='post' role='form' onsubmit='return message_submit()'>
+
+		<input id='message_thread_id' name='message_thread_id' type='hidden'></input>
+		
+		<div id='thread_name_div' class='form-group' style='display:none'>
+			<label for='thread_name'>Thread Name:</label>
+			<input id='thread_name' name='thread_name' type='text' class='form-control' disabled required></input>
+		</div>
+
+		<div class='form-group'>
+			<label for='message_text'>Message (max 140 characters):</label>
+			<textarea class='form-control' style='width:100%' maxlength='140' rows='3' id='message_text' name='message_text' required></textarea>
+		</div>
+
+		<button type='submit' class='btn btn-primary'>Submit</button>
+
+	</form>
+
+</div>
+
+<!-- message editor template for cloning -->
+<div id='message_editor' style='display:none'>
+  <form method='post' role='form' onsubmit='return false'>
+    <input name='message_id' type='hidden'></input>
+    <div class='form-group'>
+      <label for='message_text'>Message (max 140 characters):</label>
+      <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='message_text' required></textarea>
+    </div>
+    <a href='javascript:void(0)' onclick='update_message_submit($(this))' class='btn btn-primary'>Submit</a>
+    <a href='javascript:void(0)' onclick='show_editor($(this), true)' class='btn btn-danger'>Cancel</a>
+  </form>
+</div><!-- /#message_editor -->
+
+<?php } // END if (!isset($_SESSION["user_key"])) ?>
+
+<?php require_once("_resources/footer.inc.php");?>
+
+
+<style>
+  tr.hover {
+    cursor: pointer;
+  }
+  .message_metadata {
+    float: right;
+  }
+</style>
+
 
 <script>
 
@@ -197,66 +254,6 @@ function delete_message(message_id, element, undo){
 	}
 }
 
-//$(fetch_threads());
-      
-</script>
-
-<style>
-	tr.hover {
-		cursor: pointer;
-	}
-	.message_metadata {
-		float: right;
-	}
-</style>
-
-
-<?php
-if (!isset($_SESSION["user_key"])) { ?>
-
-	<p><a href='<?php echo $login_page ?>' class='btn btn-danger'>Not Logged In</a></p>
-
-<?php } else { ?>
-
-<!-- post message text area -->
-<div id='message_div' class='well' style='display:none'>
-
-	<form id='message_form' method='post' role='form' onsubmit='return message_submit()'>
-
-		<input id='message_thread_id' name='message_thread_id' type='hidden'></input>
-		
-		<div id='thread_name_div' class='form-group' style='display:none'>
-			<label for='thread_name'>Thread Name:</label>
-			<input id='thread_name' name='thread_name' type='text' class='form-control' disabled required></input>
-		</div>
-
-		<div class='form-group'>
-			<label for='message_text'>Message (max 140 characters):</label>
-			<textarea class='form-control' style='width:100%' maxlength='140' rows='3' id='message_text' name='message_text' required></textarea>
-		</div>
-
-		<button type='submit' class='btn btn-primary'>Submit</button>
-
-	</form>
-
-</div>
-
-<!-- message editor template for cloning -->
-<div id='message_editor' style='display:none'>
-  <form method='post' role='form' onsubmit='return false'>
-    <input name='message_id' type='hidden'></input>
-    <div class='form-group'>
-      <label for='message_text'>Message (max 140 characters):</label>
-      <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='message_text' required></textarea>
-    </div>
-    <a href='javascript:void(0)' onclick='update_message_submit($(this))' class='btn btn-primary'>Submit</a>
-    <a href='javascript:void(0)' onclick='show_editor($(this), true)' class='btn btn-danger'>Cancel</a>
-  </form>
-</div><!-- /#message_editor -->
-
-<?php } // END if (!isset($_SESSION["user_key"])) ?>
-
-<?php require_once("_resources/footer.inc.php");?>
-<script>
 $(list_content(null, $("#list_of_projects_div")));
+
 </script>
