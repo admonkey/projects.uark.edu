@@ -205,7 +205,12 @@ function show_new_content_editor(element, cancel){
     //message_editor.find("textarea").val(message_body_well.find(".message_text").prop("innerHTML").replace(/<br>/g, ""));
     content_editor_well.hide("slide", function(){
       content_editor_well.html(content_editor.show());
-      content_editor_well.show("slide");
+      content_editor_well.show("slide", function(){
+	$("html, body").animate({
+	    scrollTop: content_editor_well.offset().top
+	}, "slow");
+	content_editor.find("textarea").focus()
+      });
     });
   }
 }
