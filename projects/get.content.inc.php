@@ -40,10 +40,12 @@ echo "
     content_key='$row[content_key]'
     content_createdby_user_key='$row[content_createdby_user_key]'
     content_editedby_user_key='$row[content_editedby_user_key]'
-  />
+  />";
   
-  <p><label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label></p>
-  <div class='content_editor_well well' style='display:none'></div>
+if(!empty($_SESSION["user_key"]))
+  echo "<p><label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label></p>";
+
+echo "<div class='content_editor_well well' style='display:none'></div>
   <div class='children_container' style='margin-top:10px'>";
   
 if( !empty($row["has_children"]) && $row["project_key"] !== $row["content_key"] )
