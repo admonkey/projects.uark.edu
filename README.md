@@ -18,12 +18,9 @@ Might work elsewhere, but designed and tested on:
 - Git 2.6.2
 - MySQL  Ver 14.14 Distrib 5.5.46, for debian-linux-gnu (x86_64) using readline 6.3
 
-## Issues
-- Currently using the deprecated mysql functions. Need to upgrade to mysqli ASAP
-
 ## Notes
 - In the `/_resources/header.inc.php` file, you should notice definitions for `$path_real_root`  
-  and `$path_web_relative_root`. These variables allow the template to run flexibly in different  
+  and `$path_web_root`. These variables allow the template to run flexibly in different  
   configurations without breaking links to reference files, such as:
   - At the root of a web server host. (www.example.com)
     - Private resources, such as SSL keys, SQL DDL, and credentials files  
