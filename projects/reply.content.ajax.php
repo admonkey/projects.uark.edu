@@ -5,7 +5,7 @@ require_once("_resources/header.inc.php");
 if (valid_positive_integer(@$_POST["parent_content_key"]))
   $parent_content_key = "$_POST[parent_content_key]";
 else
-  echo "<p>ERROR: invalid parent_content_key</p>";
+  $parent_content_key = NULL;
 
 if (!empty($_SESSION["user_key"])) $user_key = $_SESSION["user_key"];
 
@@ -16,7 +16,6 @@ if (empty($_POST["content_title"])) $content_title = NULL;
 
 if(
   !empty($user_key) &&
-  !empty($parent_content_key) &&
   !empty($content_value) &&
   !empty($mysqli_connected)
 ){

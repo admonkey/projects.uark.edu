@@ -14,7 +14,7 @@ if(empty($_GET["content_key"])) echo "<h1>$section_title</h1>";
   <div class='col-xs-4'><p><a btn-text='Projects' btn-show='false' id='show_list_of_projects' href='javascript:toggle_list($("#show_list_of_projects"), $("#list_of_projects_div"))' class='btn btn-warning'>Hide Projects</a></p></div>
   <!--<div class='col-xs-4'><p><a id='show_list_of_threads' href='javascript:fetch_threads()' class='btn btn-primary'>Show Threads</a></p></div>-->
   <?php if (isset($_SESSION["user_key"])) { ?>
-    <div class='col-xs-4'><p><a href='javascript:create_thread()' class='btn btn-success'>Create New Thread</a></p></div>
+    <div class='col-xs-4'><p><a href='javascript:create_project()' class='btn btn-success'>Create New Project</a></p></div>
   <?php } ?>
 </div><!-- /#page_controls.row -->
 
@@ -44,18 +44,18 @@ if (!isset($_SESSION["user_key"])) { ?>
 <!-- post message text area -->
 <div id='message_div' class='well' style='display:none'>
 
-	<form id='message_form' method='post' role='form' onsubmit='return message_submit()'>
+	<form id='message_form' method='post' role='form' onsubmit='return submit_project($(this))'>
 
 		<input id='message_thread_id' name='message_thread_id' type='hidden'></input>
 		
-		<div id='thread_name_div' class='form-group' style='display:none'>
-			<label for='thread_name'>Thread Name:</label>
-			<input id='thread_name' name='thread_name' type='text' class='form-control' disabled required></input>
+		<div id='thread_name_div' class='form-group'>
+			<label for='content_title'>Thread Name:</label>
+			<input id='content_title' name='content_title' type='text' class='form-control' required></input>
 		</div>
 
 		<div class='form-group'>
-			<label for='message_text'>Message (max 140 characters):</label>
-			<textarea class='form-control' style='width:100%' maxlength='140' rows='3' id='message_text' name='message_text' required></textarea>
+			<label for='content_value'>Message (max 140 characters):</label>
+			<textarea class='form-control' style='width:100%' maxlength='140' rows='3' id='content_value' name='content_value' required></textarea>
 		</div>
 
 		<button type='submit' class='btn btn-primary'>Submit</button>
@@ -192,6 +192,28 @@ function reply_content(element){
   });
 }
 
+function submit_project(element){
+  var serialized_data = element.closest("form").serialize();
+  //var children_container = element.closest(".content_container").children(".children_container");
+  //var parent_content_key = element.closest(".content_container").children("content_data").attr("content_key");
+  $.post('reply.content.ajax.php', serialized_data, function(result) {
+    
+    $("#message_div").html(result);
+    
+    /*
+    children_container.hide("slide", function(){
+      var content_editor_well = element.closest(".content_container").children(".content_editor_well");
+      content_editor_well.hide("slide", function(){
+	content_editor_well.html("");
+	children_container.html("");
+	fetch_content_list(parent_content_key, children_container);
+      });
+    });
+    */
+  });
+  return false;
+}
+
 function show_new_content_editor(element, cancel){
   var content_editor_well = element.closest(".content_container").children(".content_editor_well");
   if (cancel) {
@@ -214,6 +236,13 @@ function show_new_content_editor(element, cancel){
       });
     });
   }
+}
+
+function create_project() {
+	$("#list_of_threads_div").hide("blind");
+	$("#list_of_projects_div").hide("blind");
+	$("#thread_div").hide("blind", function(){$("#thread_messages_div").html("")});
+	$("#message_div").show("blind");
 }
 
 // http://stackoverflow.com/questions/10055299/are-alternate-nested-styles-possible-in-css#answer-10055729

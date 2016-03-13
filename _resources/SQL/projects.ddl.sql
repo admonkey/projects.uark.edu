@@ -324,6 +324,8 @@ this_procedure:BEGIN
     TRUE,
     valid_content_createdby_user_key
   );
+  
+  SELECT new_content_key AS 'new_content_key';
 
 END $$
 
