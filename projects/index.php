@@ -216,6 +216,7 @@ function show_new_content_editor(element, cancel){
   }
 }
 
+// http://stackoverflow.com/questions/10055299/are-alternate-nested-styles-possible-in-css#answer-10055729
 jQuery(function($) {
     $.fn.alternateNestedBgColor = function(colors) {
         // While not a great optimization, length of the colors array always stays the same
