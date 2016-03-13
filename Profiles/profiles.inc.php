@@ -5,9 +5,10 @@ if( !empty($mysqli_connected) ){
     $query_profiles="
 	SELECT user_key, username, user_creation_time
 	FROM `Users`
+	WHERE user_key > 0
     ";
     if (empty($_SESSION["user_groups"]["ADMIN"]))
-      $query_profiles .= " WHERE private_profile = 0";
+      $query_profiles .= " AND private_profile = 0";
     
     $result_profiles = $mysqli_connection->query($query_profiles);
     
