@@ -10,7 +10,8 @@ include_fake_data=true
 # must be in proper order for drop/add with key relationships
 ddl_files=( \
   "_resources/SQL/projects.ddl.sql"\
-  "_resources/SQL/projects.seed.sql"
+  "_resources/SQL/projects.seed.sql"\
+  "_resources/SQL/createusers.sql"
 )
 fake_data_files=(\
   "projects/_resources/SQL/projects.fakedata.sql"
