@@ -140,6 +140,7 @@ function fetch_content_list(parent_content_key, insert_div){
 	apply_tablesorter();
 	insert_div.show("blind", function(){
 	  insert_div.closest(".content_container").hide().show("highlight", {duration:2000});
+	  insert_div.alternateNestedBgColor(['white', '#f5f5f5']);
 	  // scroll to newest content
 	  $("html, body").animate({
 	      scrollTop: (insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:5000} ).offset().top) - (0.75*screen.height)
@@ -215,6 +216,33 @@ function show_new_content_editor(element, cancel){
   }
 }
 
+jQuery(function($) {
+    $.fn.alternateNestedBgColor = function(colors) {
+        // While not a great optimization, length of the colors array always stays the same
+        var l = colors.length;
+
+        // Itterate over all element in possible array
+        // jQuery best practice to handle initializing multiple elements at once
+        return this.each(function() {
+            var $sub = $(this), i = 0; 
+
+            // Executes code, at least once
+            do {
+
+                // Set bg color for current $sub element
+                $sub.css('backgroundColor', colors[i++ % l]);
+                // Set $sub to direct children matching given selector
+                $sub = $sub.parents(".well");
+
+            // Will repeat the do section if the condition returns true
+            } while ($sub.length > 0);
+        });
+    };
+});
+
+$(fetch_content_table(null, $("#list_of_projects_div")));
+
+<?php if(!empty($_GET["content_key"])) echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));"; ?>
 
 // old Forum javascript ///////////////////////////////////////////////////////////////////////////
 
@@ -330,9 +358,5 @@ function delete_message(message_id, element, undo){
 		},cache: false});
 	}
 }
-
-$(fetch_content_table(null, $("#list_of_projects_div")));
-
-<?php if(!empty($_GET["content_key"])) echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));"; ?>
 
 </script>
