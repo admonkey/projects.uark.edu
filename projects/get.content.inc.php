@@ -6,7 +6,7 @@ echo "<div class='content_container well'>";
     echo "<h1>$row[content_title]</h1>";
   elseif ($row["content_key"] === $row["thread_key"])
     echo "<h2>$row[content_title]</h2>";
-  else
+  elseif (!substr_startswith($row["content_title"], "RE: "))
     echo "<h3>$row[content_title]</h3>";
 
 echo "
