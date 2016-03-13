@@ -46,7 +46,7 @@ echo "
   <div class='content_editor_well well' style='display:none'></div>
   <div class='children_container' style='margin-top:10px'>";
   
-if(!empty($row["has_children"]))
+if( !empty($row["has_children"]) && $row["project_key"] !== $row["content_key"] )
   echo "
     <label class='label label-success'>
       <a 
