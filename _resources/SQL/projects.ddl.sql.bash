@@ -14,7 +14,8 @@ ddl_files=( \
   "_resources/SQL/createusers.sql"
 )
 fake_data_files=(\
-  "projects/_resources/SQL/projects.fakedata.sql"
+  "projects/_resources/SQL/projects.fakedata.sql"\
+  "projects/_resources/SQL/projectslist.sql"
 )
 
 # move to working directory

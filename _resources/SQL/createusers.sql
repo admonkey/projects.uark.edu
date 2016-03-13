@@ -4,6 +4,7 @@ INSERT INTO Users (email,username,private_profile) VALUES ('vr001','Vignesh Ravi
 INSERT INTO Users (email,username,private_profile) VALUES ('gw004','Greg Williams',0);
 INSERT INTO Users (email,username,private_profile) VALUES ('naliu','Luna',0);
 INSERT INTO Users (email,username,private_profile) VALUES ('dbruce','David Bruce',0);
+INSERT INTO Users (email,username,private_profile) VALUES ('cam','Chris McCoy',0);
 INSERT INTO Users (email,username,private_profile) VALUES ('schabba','Sukhmani Chabba',0);
 INSERT INTO Users (email,username,private_profile) VALUES ('dkhan','Danish Khan',0);
 INSERT INTO Users (email,username,private_profile) VALUES ('gsphill','Greg Phillips',0);
