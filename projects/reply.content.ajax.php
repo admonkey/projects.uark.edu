@@ -9,7 +9,7 @@ else
 
 if (!empty($_SESSION["user_key"])) $user_key = $_SESSION["user_key"];
 
-if (!empty($_POST["content_value"])) htmlentities($content_value = $_POST["content_value"]);
+if (!empty($_POST["content_value"])) $content_value = htmlentities($_POST["content_value"]);
 
 if (empty($_POST["content_title"])) $content_title = NULL;
   else $content_title = htmlentities($_POST["content_title"]);
