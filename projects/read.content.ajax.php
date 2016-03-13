@@ -13,18 +13,7 @@ if( !empty($mysqli_connected) ){
 
   $row = $result->fetch_assoc();
   
-  echo "<div class='content_container well'>";
-
-  if ($row["content_key"] === $row["project_key"])
-    echo "<h1>$row[content_title]</h1>";
-  elseif ($row["content_key"] === $row["thread_key"])
-    echo "<h2>$row[content_title]</h2>";
-  else
-    echo "<h3>$row[content_title]</h3>";
-  
   include("get.content.inc.php");
-  
-  echo "<div class='children_container' style='margin-top:10px'></div></div>";
 
 } else {
 

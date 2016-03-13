@@ -14,24 +14,9 @@ if( !empty($mysqli_connected) ){
   if(isset($_GET["list"])){ // BEGIN IF list
 
     while ($row = $result->fetch_assoc()){
-      echo "<div class='content_container well'>";
 
       include("get.content.inc.php");
       
-      if(!empty($row["has_children"]))
-	echo "
-	  <label class='label label-success'>
-	    <a 
-	      href='javascript:void(0)'
-	      onclick='fetch_content_list($row[content_key], $(this).closest(\".content_container\").find(\".children_container\"))'
-	      style='color:white'
-	    >
-	      <i class='fa fa-plus-circle'></i> Show Replies
-	    </a>
-	  </label>
-	";
-      
-      echo "<div class='children_container' style='margin-top:10px'></div></div>";
     }
 
   } else { // END IF list, BEGIN IF table

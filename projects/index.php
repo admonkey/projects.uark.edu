@@ -130,7 +130,7 @@ function fetch_content_list(parent_content_key, insert_div){
       success: function(result){
 	insert_div.html(result);
 	apply_tablesorter();
-	insert_div.show("slide");
+	insert_div.show("blind");
       }
     });
   });

@@ -1,4 +1,14 @@
 <?php
+  
+echo "<div class='content_container well'>";
+
+  if ($row["content_key"] === $row["project_key"])
+    echo "<h1>$row[content_title]</h1>";
+  elseif ($row["content_key"] === $row["thread_key"])
+    echo "<h2>$row[content_title]</h2>";
+  else
+    echo "<h3>$row[content_title]</h3>";
+
 echo "
   <label class='label label-default'>created</label>
   <label class='label label-info'>$row[content_creation_time]</label>
@@ -34,5 +44,20 @@ echo "
   
   <p><label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label></p>
   <div class='content_editor_well well' style='display:none'></div>
-";
+  <div class='children_container' style='margin-top:10px'>";
+  
+if(!empty($row["has_children"]))
+  echo "
+    <label class='label label-success'>
+      <a 
+	href='javascript:void(0)'
+	onclick='fetch_content_list($row[content_key], $(this).closest(\".content_container\").find(\".children_container\"))'
+	style='color:white'
+      >
+	<i class='fa fa-plus-circle'></i> Show Replies
+      </a>
+    </label>
+  ";
+
+echo "</div></div>";
 ?>
