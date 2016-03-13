@@ -130,7 +130,12 @@ function fetch_content_list(parent_content_key, insert_div){
       success: function(result){
 	insert_div.html(result);
 	apply_tablesorter();
-	insert_div.show("blind");
+	insert_div.show("blind", function(){
+	  // scroll to newest content
+	  $("html, body").animate({
+	      scrollTop: insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:3000} ).offset().top
+	  }, "slow");
+	});
       }
     });
   });
