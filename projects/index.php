@@ -67,13 +67,13 @@ if (!isset($_SESSION["user_key"])) { ?>
 <!-- message editor template for cloning -->
 <div id='message_editor' style='display:none'>
   <form method='post' role='form' onsubmit='return false'>
-    <input name='message_id' type='hidden'></input>
+    <input name='parent_content_key' type='hidden'></input>
     <div class='form-group'>
-      <label for='message_text'>Message (max 140 characters):</label>
-      <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='message_text' required></textarea>
+      <label for='content_value'>Message (max 140 characters):</label>
+      <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='content_value' required></textarea>
     </div>
-    <a href='javascript:void(0)' onclick='update_message_submit($(this))' class='btn btn-primary'>Submit</a>
-    <a href='javascript:void(0)' onclick='show_content_editor($(this), true)' class='btn btn-danger'>Cancel</a>
+    <a href='javascript:void(0)' onclick='reply_content($(this))' class='btn btn-primary'>Submit</a>
+    <a href='javascript:void(0)' onclick='show_new_content_editor($(this), true)' class='btn btn-danger'>Cancel</a>
   </form>
 </div><!-- /#message_editor -->
 
@@ -130,7 +130,7 @@ function fetch_content_list(parent_content_key, insert_div){
       success: function(result){
 	insert_div.html(result);
 	apply_tablesorter();
-	insert_div.show("blind");
+	insert_div.show("slide");
       }
     });
   });
@@ -161,21 +161,24 @@ function click_row(tr){
   tr.addClass("bg-primary").siblings().removeClass("bg-primary");
 }
 
-function reply_content(parent_content_key){
-  $.ajax({url: "reply.content.ajax.php?content_value=javaplied&parent_content_key="+parent_content_key,
-    success: function(result){
-      alert("success");
-      /*
-      insert_div.html(result);
-      apply_tablesorter();
-      insert_div.show("blind");
-      */
-    }
+function reply_content(element){
+  var serialized_data = element.closest("form").serialize();
+  var children_container = element.closest(".content_container").children(".children_container");
+  var parent_content_key = element.closest(".content_container").children("content_data").attr("content_key");
+  $.post('reply.content.ajax.php', serialized_data, function(result) {
+    children_container.hide("slide", function(){
+      var content_editor_well = element.closest(".content_container").children(".content_editor_well");
+      content_editor_well.hide("slide", function(){
+	content_editor_well.html("");
+	children_container.html("");
+	fetch_content_list(parent_content_key, children_container);
+      });
+    });
   });
 }
 
-function show_content_editor(element, cancel){
-  var content_editor_well = element.closest(".content_container").find(".content_editor_well");
+function show_new_content_editor(element, cancel){
+  var content_editor_well = element.closest(".content_container").children(".content_editor_well");
   if (cancel) {
     content_editor_well.hide("slide", function(){
       content_editor_well.html("");
@@ -183,7 +186,8 @@ function show_content_editor(element, cancel){
   } else {
     var content_editor = $("#message_editor").clone();
     auto_expand_textarea(content_editor.find("textarea"));
-    //message_editor.find("[name=message_id]").val(element.parents(".message_metadata").find("message_data").attr("message_id"));
+    var parent_content_key = element.closest(".content_container").children("content_data").attr("content_key");
+    content_editor.find("[name=parent_content_key]").val(parent_content_key);
     //message_editor.find("textarea").val(message_body_well.find(".message_text").prop("innerHTML").replace(/<br>/g, ""));
     content_editor_well.hide("slide", function(){
       content_editor_well.html(content_editor.show());

@@ -32,7 +32,7 @@ echo "
     content_editedby_user_key='$row[content_editedby_user_key]'
   />
   
-  <p><label class='label label-primary'><a href='javascript:void(0)' onclick='show_content_editor($(this), false)'>Reply</a></label></p>
+  <p><label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label></p>
   <div class='content_editor_well well' style='display:none'></div>
 ";
 ?>
