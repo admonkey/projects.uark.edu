@@ -49,12 +49,12 @@ if (!isset($_SESSION["user_key"])) { ?>
 		<input id='message_thread_id' name='message_thread_id' type='hidden'></input>
 		
 		<div id='thread_name_div' class='form-group'>
-			<label for='content_title'>Thread Name:</label>
+			<label for='content_title'>Project Title:</label>
 			<input id='content_title' name='content_title' type='text' class='form-control' required></input>
 		</div>
 
 		<div class='form-group'>
-			<label for='content_value'>Message (max 140 characters):</label>
+			<label for='content_value'>Message (max 1000 characters):</label>
 			<textarea class='form-control' style='width:100%' maxlength='140' rows='3' id='content_value' name='content_value' required></textarea>
 		</div>
 
@@ -77,7 +77,7 @@ if (!isset($_SESSION["user_key"])) { ?>
     <p onclick='$(this).hide().closest(".message_editor").find("#content_title_div").show("slide").find("#content_title").prop("disabled",false).focus()'><label class='label label-success'><a href='javascript:void(0)' style='color:white'><i class='fa fa-plus-circle'></i> Add Title</a></label></p>
 
     <div class='form-group'>
-      <label for='content_value'>Message (max 140 characters):</label>
+      <label for='content_value'>Message (max 1000 characters):</label>
       <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='content_value' required></textarea>
     </div>
     <a href='javascript:void(0)' onclick='reply_content($(this))' class='btn btn-primary'>Submit</a>
