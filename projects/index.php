@@ -74,7 +74,7 @@ if (!isset($_SESSION["user_key"])) { ?>
       <input id='content_title' name='content_title' type='text' class='form-control' disabled required></input>
     </div>
     <!-- $(this).prev(".content_title_div").show().find("#content_title").prop("disabled",false); -->
-    <p onclick='$(this).hide().closest(".message_editor").find("#content_title_div").show("slide").find("#content_title").prop("disabled",false)'><label class='label label-success'><a href='javascript:void(0)' style='color:white'><i class='fa fa-plus-circle'></i> Add Title</a></label></p>
+    <p onclick='$(this).hide().closest(".message_editor").find("#content_title_div").show("slide").find("#content_title").prop("disabled",false).focus()'><label class='label label-success'><a href='javascript:void(0)' style='color:white'><i class='fa fa-plus-circle'></i> Add Title</a></label></p>
 
     <div class='form-group'>
       <label for='content_value'>Message (max 140 characters):</label>
