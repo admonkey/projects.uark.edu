@@ -9,7 +9,10 @@ else
 
 if (!empty($_SESSION["user_key"])) $user_key = $_SESSION["user_key"];
 
-if (!empty($_POST["content_value"])) $content_value = $_POST["content_value"];
+if (!empty($_POST["content_value"])) htmlentities($content_value = $_POST["content_value"]);
+
+if (empty($_POST["content_title"])) $content_title = NULL;
+  else $content_title = htmlentities($_POST["content_title"]);
 
 if(
   !empty($user_key) &&
@@ -17,8 +20,8 @@ if(
   !empty($content_value) &&
   !empty($mysqli_connected)
 ){
-  $stmt = $mysqli_connection->prepare("CALL create_reply(?,?,?)") or die($mysqli_connection->error);
-  $stmt->bind_param('iis', $user_key, $parent_content_key, $content_value);
+  $stmt = $mysqli_connection->prepare("CALL create_content(?,?,?,?)") or die($mysqli_connection->error);
+  $stmt->bind_param('iiss', $user_key, $parent_content_key, $content_title, $content_value);
   $stmt->execute();
   $stmt->close();
   echo "success";
