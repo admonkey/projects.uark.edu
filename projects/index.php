@@ -139,9 +139,10 @@ function fetch_content_list(parent_content_key, insert_div){
 	insert_div.html(result);
 	apply_tablesorter();
 	insert_div.show("blind", function(){
+	  insert_div.closest(".content_container").hide().show("highlight", {duration:2000});
 	  // scroll to newest content
 	  $("html, body").animate({
-	      scrollTop: insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:3000} ).offset().top
+	      scrollTop: (insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:5000} ).offset().top) - (0.75*screen.height)
 	  }, "slow");
 	});
       }
