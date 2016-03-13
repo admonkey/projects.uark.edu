@@ -169,6 +169,7 @@ function click_row(tr){
   var content_key = tr.find("content_data").attr("content_key");
   var thread_key = tr.find("content_data").attr("thread_key");
   if(! thread_key){
+    toggle_list($("#show_list_of_projects"), $("#list_of_projects_div"));
     fetch_content(content_key,$("#project_content_div"));
     fetch_content_table(content_key, $("#list_of_threads_div"));
   } else
