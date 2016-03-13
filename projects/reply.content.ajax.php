@@ -22,8 +22,12 @@ if(
   $stmt = $mysqli_connection->prepare("CALL create_content(?,?,?,?)") or die($mysqli_connection->error);
   $stmt->bind_param('iiss', $user_key, $parent_content_key, $content_title, $content_value);
   $stmt->execute();
+  $stmt->store_result();
+  // get variables from result.
+  $stmt->bind_result($new_content_key);
+  $stmt->fetch();
   $stmt->close();
-  echo "success";
+  echo "<script>window.location = '?content_key=$new_content_key'</script>";
 } else echo "incomplete params";
 
 require_once("_resources/footer.inc.php");
