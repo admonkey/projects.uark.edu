@@ -172,6 +172,10 @@ DROP PROCEDURE IF EXISTS create_content;
 DROP PROCEDURE IF EXISTS update_content;
 DROP PROCEDURE IF EXISTS fetch_children;
 DROP PROCEDURE IF EXISTS read_content;
+DROP PROCEDURE IF EXISTS get_content;
+DROP PROCEDURE IF EXISTS create_vote;
+DROP PROCEDURE IF EXISTS test_proc;
+DROP PROCEDURE IF EXISTS create_reply;
 -- TODO:
 DROP PROCEDURE IF EXISTS delete_content;
 
@@ -214,6 +218,16 @@ this_procedure:BEGIN
 
 END $$
 
+CREATE PROCEDURE create_reply(
+  p_content_createdby_user_key INT,
+  p_parent_content_key INT,
+  p_content_value VARCHAR(1000)
+)
+this_procedure:BEGIN
+
+  CALL create_content(p_content_createdby_user_key,p_parent_content_key,NULL,p_content_value);
+
+END $$
 
 CREATE PROCEDURE create_content (
   p_content_createdby_user_key INT,
@@ -314,12 +328,15 @@ this_procedure:BEGIN
     TRUE,
     valid_content_createdby_user_key
   );
+  
+  SELECT new_content_key AS 'new_content_key';
 
 END $$
 
 
-CREATE PROCEDURE read_content (
-  IN p_content_key INT
+CREATE PROCEDURE get_content (
+  IN p_content_key INT,
+  IN children BOOLEAN
 )
 this_procedure:BEGIN
 
@@ -332,8 +349,40 @@ this_procedure:BEGIN
   LEFT JOIN Users ue
     ON c.content_editedby_user_key = ue.user_key
   WHERE
-    content_key = p_content_key
+    
+    IF(children = TRUE,
+      IF(p_content_key IS NULL,
+	parent_content_key IS NULL,
+	parent_content_key = p_content_key
+      )
+      AND content_key > 0,
+    -- else
+      content_key = p_content_key
+    )
     AND content_deleted = FALSE;
+
+--   -- read content
+--   WHERE
+--     content_key = p_content_key
+--     AND content_deleted = FALSE;
+--   
+--   -- fetch_children
+--   WHERE
+--     IF(p_parent_content_key IS NULL,
+--       parent_content_key IS NULL,
+--       parent_content_key = p_parent_content_key
+--     )
+--     AND content_key > 0
+--     AND content_deleted = FALSE;
+
+END $$
+
+CREATE PROCEDURE read_content (
+  IN p_content_key INT
+)
+this_procedure:BEGIN
+
+  CALL get_content(p_content_key,FALSE);
 
 END $$
 
@@ -343,21 +392,7 @@ CREATE PROCEDURE fetch_children (
 )
 this_procedure:BEGIN
 
-  SELECT c.*,
-    uc.username AS 'content_createdby_username',
-    ue.username AS 'content_editedby_username'
-  FROM Content c
-  LEFT JOIN Users uc
-    ON c.content_createdby_user_key = uc.user_key
-  LEFT JOIN Users ue
-    ON c.content_editedby_user_key = ue.user_key
-  WHERE
-    IF(p_parent_content_key IS NULL,
-      parent_content_key IS NULL,
-      parent_content_key = p_parent_content_key
-    )
-    AND content_key > 0
-    AND content_deleted = FALSE;
+  CALL get_content(p_parent_content_key,TRUE);
 
 END $$
 
