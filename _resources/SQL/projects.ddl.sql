@@ -394,13 +394,25 @@ END $$
 
 CREATE PROCEDURE get_content (
   IN p_content_key INT,
-  IN children BOOLEAN
+  IN children BOOLEAN,
+  IN p_user_key INT
 )
 this_procedure:BEGIN
 
+  DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
+  DECLARE authorized_editor BOOLEAN DEFAULT 0;
+  
+  IF p_user_key IS NOT NULL AND p_content_key IS NOT NULL THEN
+    SET authorization_msg = authorize_content_editor(p_user_key,p_content_key);
+    IF authorization_msg = 'authorized' THEN
+      SET authorized_editor = 1;
+    END IF;
+  END IF;
+
   SELECT c.*,
     uc.username AS 'content_createdby_username',
-    ue.username AS 'content_editedby_username'
+    ue.username AS 'content_editedby_username',
+    authorized_editor
   FROM Content c
   LEFT JOIN Users uc
     ON c.content_createdby_user_key = uc.user_key
@@ -419,38 +431,26 @@ this_procedure:BEGIN
     )
     AND content_deleted = FALSE;
 
---   -- read content
---   WHERE
---     content_key = p_content_key
---     AND content_deleted = FALSE;
---   
---   -- fetch_children
---   WHERE
---     IF(p_parent_content_key IS NULL,
---       parent_content_key IS NULL,
---       parent_content_key = p_parent_content_key
---     )
---     AND content_key > 0
---     AND content_deleted = FALSE;
-
 END $$
 
 CREATE PROCEDURE read_content (
-  IN p_content_key INT
+  IN p_content_key INT,
+  IN p_user_key INT
 )
 this_procedure:BEGIN
 
-  CALL get_content(p_content_key,FALSE);
+  CALL get_content(p_content_key,FALSE,p_user_key);
 
 END $$
 
 
 CREATE PROCEDURE fetch_children (
-  IN p_parent_content_key INT
+  IN p_parent_content_key INT,
+  IN p_user_key INT
 )
 this_procedure:BEGIN
 
-  CALL get_content(p_parent_content_key,TRUE);
+  CALL get_content(p_parent_content_key,TRUE,p_user_key);
 
 END $$
 

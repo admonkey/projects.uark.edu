@@ -7,9 +7,14 @@ if (valid_positive_integer(@$_GET["parent_content_key"]))
 else
   $parent_content_key = "NULL";
 
+if (!empty($_SESSION["user_key"]))
+  $user_key = $_SESSION["user_key"];
+else
+  $user_key = "NULL";
+
 if( !empty($mysqli_connected) ){
     
-  $result = $mysqli_connection->query("CALL fetch_children($parent_content_key)") or die($mysqli_connection->error);
+  $result = $mysqli_connection->query("CALL fetch_children($parent_content_key,$user_key)") or die($mysqli_connection->error);
 
   if(isset($_GET["list"])){ // BEGIN IF list
 

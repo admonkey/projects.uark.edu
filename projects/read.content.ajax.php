@@ -7,9 +7,14 @@ if (valid_positive_integer(@$_GET["content_key"]))
 else
   $content_key = "NULL";
 
+if (!empty($_SESSION["user_key"]))
+  $user_key = $_SESSION["user_key"];
+else
+  $user_key = "NULL";
+
 if( !empty($mysqli_connected) ){
     
-  $result = $mysqli_connection->query("CALL read_content($content_key)") or die($mysqli_connection->error);
+  $result = $mysqli_connection->query("CALL read_content($content_key,$user_key)") or die($mysqli_connection->error);
 
   $row = $result->fetch_assoc();
   
