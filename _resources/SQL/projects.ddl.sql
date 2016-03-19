@@ -174,8 +174,7 @@ DROP PROCEDURE IF EXISTS get_content;
 DROP PROCEDURE IF EXISTS create_vote;
 DROP PROCEDURE IF EXISTS test_proc;
 DROP PROCEDURE IF EXISTS create_reply;
--- TODO:
-DROP PROCEDURE IF EXISTS delete_content;
+DROP FUNCTION IF EXISTS authorize_content_editor;
 
 DELIMITER $$
 
@@ -213,6 +212,67 @@ this_procedure:BEGIN
   SELECT LAST_INSERT_ID() AS 'user_key',
     p_username AS 'username',
     p_email AS 'email';
+
+END $$
+
+CREATE FUNCTION authorize_content_editor (
+  p_user_key INT,
+  p_content_key INT
+)
+RETURNS VARCHAR(20)
+BEGIN
+
+  DECLARE valid_user_key INT DEFAULT NULL;
+  DECLARE valid_content_key INT DEFAULT NULL;
+  DECLARE valid_thread_key INT DEFAULT NULL;
+  DECLARE valid_project_key INT DEFAULT NULL;
+  DECLARE authorized_user_key INT DEFAULT NULL;
+
+  -- parameter validation
+  SELECT user_key
+  INTO valid_user_key
+  FROM Users
+  WHERE user_key = p_user_key;
+  IF valid_user_key IS NULL THEN
+    RETURN 'invalid p_user_key';
+  END IF;
+
+  SELECT content_key, thread_key, project_key
+  INTO valid_content_key, valid_thread_key, valid_project_key
+  FROM Content
+  WHERE content_key = p_content_key;
+  IF valid_content_key IS NULL THEN
+    RETURN 'invalid p_content_key';
+  END IF;
+
+  -- for performance considerations, authority is restricted to three tiers
+  -- content, thread, project
+  SELECT user_key
+  INTO authorized_user_key
+  FROM Content_Editors
+  WHERE user_key = valid_user_key
+    AND (
+      content_key = valid_content_key OR
+      content_key = valid_thread_key OR
+      content_key = valid_project_key
+    )
+  LIMIT 1;
+
+  IF authorized_user_key IS NOT NULL THEN
+    RETURN 'authorized';
+  END IF;
+  
+  SELECT content_createdby_user_key
+  INTO authorized_user_key
+  FROM Content
+  WHERE content_createdby_user_key = valid_user_key
+    AND content_key = valid_content_key;
+  
+  IF authorized_user_key IS NOT NULL THEN
+    RETURN 'authorized';
+  ELSE
+    RETURN 'UNAUTHORIZED';
+  END IF;
 
 END $$
 
@@ -404,10 +464,11 @@ CREATE PROCEDURE update_content (
 )
 this_procedure:BEGIN
 
-  -- validate keys
+  DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
   DECLARE valid_content_key INT DEFAULT NULL;
   DECLARE valid_content_editedby_user_key INT DEFAULT NULL;
   
+  -- validate
   SELECT content_key INTO valid_content_key
   FROM Content
   WHERE content_key = p_content_key;
@@ -422,6 +483,13 @@ this_procedure:BEGIN
   WHERE user_key = p_user_key;
   IF valid_content_editedby_user_key IS NULL THEN
     SELECT 'invalid p_content_createdby_user_key' AS 'ERROR';
+    LEAVE this_procedure;
+  END IF;
+
+  -- authorize
+  SET authorization_msg = authorize_content_editor(valid_content_editedby_user_key,valid_content_key);
+  IF authorization_msg <> 'authorized' THEN
+    SELECT authorization_msg AS 'ERROR';
     LEAVE this_procedure;
   END IF;
 
