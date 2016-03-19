@@ -420,7 +420,6 @@ this_procedure:BEGIN
     content_value,
     project_key,
     thread_key,
-    group_key,
     parent_content_key,
     has_children,
     content_key,
@@ -434,7 +433,6 @@ this_procedure:BEGIN
     content_value,
     project_key,
     thread_key,
-    group_key,
     parent_content_key,
     has_children,
     content_key,
@@ -444,25 +442,36 @@ this_procedure:BEGIN
     content_editedby_user_key,
     content_deleted
   FROM Content
-  WHERE content_key = p_content_key;
+  WHERE content_key = valid_content_key;
 
   -- update current record
   IF p_content_title IS NOT NULL THEN
     UPDATE Content
     SET content_title = p_content_title
-    WHERE content_key = p_content_key;
+    WHERE content_key = valid_content_key;
   END IF;
 
   IF p_content_value IS NOT NULL THEN
     UPDATE Content
     SET content_value = p_content_value
-    WHERE content_key = p_content_key;
+    WHERE content_key = valid_content_key;
   END IF;
 
   IF p_content_deleted IS NOT NULL THEN
     UPDATE Content
     SET content_deleted = p_content_deleted
-    WHERE content_key = p_content_key;
+    WHERE content_key = valid_content_key;
+  END IF;
+  
+  UPDATE Content
+  SET content_edited_time = CURRENT_TIMESTAMP,
+      content_editedby_user_key = p_user_key
+  WHERE content_key = valid_content_key;
+  
+  IF p_content_deleted = TRUE THEN
+    SELECT 'content deleted. undo?' AS 'success';
+  ELSE
+    CALL read_content(valid_content_key);
   END IF;
 
 END $$
