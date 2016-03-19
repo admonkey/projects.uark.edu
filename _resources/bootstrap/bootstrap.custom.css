@@ -59,6 +59,6 @@ nav.navbar{
 }
 
 /* default primary label background color is same as anchor */
-.label-primary a {
+.label a {
   color:white;
 }
