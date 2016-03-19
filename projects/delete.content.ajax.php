@@ -23,11 +23,11 @@ else {
   $stmt->bind_result($response);
   $stmt->fetch();
 
-  if ((valid_positive_integer($response)) && ($deleted === 1))
+  if (($response === "deleted") && ($deleted === 1))
     echo "
-      <div class='content_deleted_container'>
-	<p class='text-danger'>Message Deleted</p>
-	<p><a href='javascript:void(0)' onclick='delete_message($response + \"&restore\", $(this), true)'><label class='label label-warning'>Undo</label></a></p>
+      <div class='content_deleted_container well'>
+	<p class='text-danger'>Content Deleted</p>
+	<p><label class='label label-warning'><a href='javascript:void(0)' onclick='delete_content($content_key, $(this), true)'>Undo</a></label></p>
       </div>
     ";
   else echo "$response";

@@ -249,17 +249,15 @@ function create_project() {
 function delete_content(content_key, element, undo){
 	var content_super_container = element.closest(".content_super_container");
 	var content_deleted_super_container = content_super_container.children(".content_deleted_super_container");
-	var content_container = element.closest(".content_container");
+	var content_container = content_super_container.children(".content_container");
 	if (undo) {
-		/*
-		$.ajax({url: "message.delete.ajax.php?message_id=" + message_id, success: function(result){
-			message_wrapper.hide("slide", function(){
-				message_editor_well.html("").hide();
-				message_body_well.show();
-				message_wrapper.show("slide");
+		$.ajax({url: "delete.content.ajax.php?content_key=" + content_key, success: function(result){
+			content_super_container.hide("slide", function(){
+				content_deleted_super_container.hide();
+				content_container.show();
+				content_super_container.show("slide");
 			});
 		},cache: false});
-		*/
 	} else {
 		$.ajax({url: "delete.content.ajax.php?delete&content_key=" + content_key, success: function(result){
 			content_super_container.hide("slide", function(){
