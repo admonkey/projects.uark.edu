@@ -10,23 +10,22 @@ echo "<div class='content_container well'>";
     echo "<h3>$row[content_title]</h3>";
 
 echo "
+  <label class='label label-primary'>
+    <a href='$path_web_root/projects/?content_key=$row[project_key]'>Project $row[project_key]</a>
+  </label>
   <label class='label label-default'>created</label>
   <label class='label label-info'>$row[content_creation_time]</label>
   <label class='label label-primary'>
     <a href='$path_web_root/Profiles/?user_key=$row[content_createdby_user_key]'>$row[content_createdby_username]</a>
   </label>
-  <label class='label label-primary'>
-    <a href='$path_web_root/projects/?content_key=$row[project_key]'>Project $row[project_key]</a>
-  </label>
 ";
   
 if (!empty($row["content_editedby_user_key"])) echo "
-  <p>
-    <label class='label label-primary'>
-      <a href='$path_web_root/Profiles/?user_key=$row[content_editedby_user_key]'>$row[content_editedby_username]</a>
-    </label>
-  </p>
-  <p><label class='label label-info'>$row[content_edited_time]</label></p>
+  <label class='label label-default'>edited</label>
+  <label class='label label-info'>$row[content_edited_time]</label>
+  <label class='label label-primary'>
+    <a href='$path_web_root/Profiles/?user_key=$row[content_editedby_user_key]'>$row[content_editedby_username]</a>
+  </label>
 ";
   
 echo "
