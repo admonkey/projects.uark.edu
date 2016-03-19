@@ -25,7 +25,7 @@ else {
 
   if ((valid_positive_integer($response)) && ($deleted === 1))
     echo "
-      <div>
+      <div class='content_deleted_container'>
 	<p class='text-danger'>Message Deleted</p>
 	<p><a href='javascript:void(0)' onclick='delete_message($response + \"&restore\", $(this), true)'><label class='label label-warning'>Undo</label></a></p>
       </div>

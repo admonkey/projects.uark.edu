@@ -1,6 +1,6 @@
 <?php
   
-echo "<div class='content_container well'>";
+echo "<div class='content_super_container'><div class='content_container well'>";
 
   if ($row["content_key"] === $row["project_key"])
     echo "<h1>$row[content_title]</h1>";
@@ -42,7 +42,10 @@ echo "
   />";
   
 if(!empty($_SESSION["user_key"]))
-  echo "<p><label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label></p>";
+  echo "<p>
+    <label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label>
+    <label class='label label-danger'><a href='javascript:void(0)' onclick='delete_content($row[content_key], $(this), false)'>Delete</a></label>
+  </p>";
 
 echo "<div class='content_editor_well well' style='display:none'></div>
   <div class='children_container' style='margin-top:10px'>";
@@ -60,5 +63,5 @@ if( !empty($row["has_children"]) && $row["project_key"] !== $row["content_key"] 
     </label>
   ";
 
-echo "</div></div>";
+echo "</div></div><div class='content_deleted_super_container'></div></div>";
 ?>
