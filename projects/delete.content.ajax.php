@@ -10,24 +10,29 @@ if (valid_positive_integer(@$_GET["content_key"])) {
       if( !empty($mysqli_connected) ){
       // BEGIN validation wrapper
 
+if (isset($_GET["delete"])) $deleted = 1;
+else $deleted = 0;
 
+$stmt = $mysqli_connection->prepare("CALL update_content(?, ?, NULL, NULL, ?)") or die($mysqli_connection->error);
+$stmt->bind_param('iii', $user_key, $content_key, $deleted);
+if(!$stmt->execute())
+  echo $stmt->error;
+else {
+  $stmt->store_result();
+  // get variables from result.
+  $stmt->bind_result($response);
+  $stmt->fetch();
 
-if (isset($_GET["restore"])) $deleted = 0;
-else $deleted = 1;
-
-/*// update to mysqli
-$sql="CALL Forum_proc_Delete_Message($user_key, $content_key, $deleted)";
-$result = mysql_query($sql) or die(mysql_error());
-*/
-if ($deleted == 1)
-  echo "
-    <div>
-      <p class='text-danger'>Message Deleted</p>
-      <p><a href='javascript:void(0)' onclick='delete_message($content_key + \"&restore\", $(this), true)'><label class='label label-warning'>Undo</label></a></p>
-    </div>
-  ";
-
-
+  if ((valid_positive_integer($response)) && ($deleted === 1))
+    echo "
+      <div>
+	<p class='text-danger'>Message Deleted</p>
+	<p><a href='javascript:void(0)' onclick='delete_message($response + \"&restore\", $(this), true)'><label class='label label-warning'>Undo</label></a></p>
+      </div>
+    ";
+  else echo "$response";
+}
+$stmt->close();
 
     // END validation wrapper
     } else {

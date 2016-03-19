@@ -404,13 +404,24 @@ CREATE PROCEDURE update_content (
 )
 this_procedure:BEGIN
 
-  -- validate content exists
+  -- validate keys
   DECLARE valid_content_key INT DEFAULT NULL;
+  DECLARE valid_content_editedby_user_key INT DEFAULT NULL;
+  
   SELECT content_key INTO valid_content_key
   FROM Content
   WHERE content_key = p_content_key;
   IF valid_content_key IS NULL THEN
     SELECT 'content key does not exist' AS 'ERROR';
+    LEAVE this_procedure;
+  END IF;
+
+  SELECT user_key
+  INTO valid_content_editedby_user_key
+  FROM Users
+  WHERE user_key = p_user_key;
+  IF valid_content_editedby_user_key IS NULL THEN
+    SELECT 'invalid p_content_createdby_user_key' AS 'ERROR';
     LEAVE this_procedure;
   END IF;
 
@@ -469,11 +480,11 @@ this_procedure:BEGIN
   WHERE content_key = valid_content_key;
   
   IF p_content_deleted = TRUE THEN
-    SELECT 'content deleted. undo?' AS 'success';
+    SELECT 'deleted' AS 'success';
   ELSE
-    CALL read_content(valid_content_key);
+    SELECT 'updated' AS 'success';
   END IF;
-
+  
 END $$
 
 DELIMITER ;
