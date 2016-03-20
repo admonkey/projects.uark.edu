@@ -3,20 +3,20 @@
 $include_mysqli = true;
 require_once("_resources/header.inc.php");
 
-if (valid_positive_integer(@$_GET["content_key"])) {
-  $content_key = $_GET["content_key"];
+if (valid_positive_integer(@$_POST["content_key"])) {
+  $content_key = $_POST["content_key"];
   if (!empty($_SESSION["user_key"])){
     $user_key = $_SESSION["user_key"];
       if( !empty($mysqli_connected) ){
       // BEGIN validation wrapper
 
-if (!empty($_GET["content_title"]))
-  $content_title = $_GET["content_title"];
+if (!empty($_POST["content_title"]))
+  $content_title = $_POST["content_title"];
 else
   $content_title = NULL;
 
-if (!empty($_GET["content_value"]))
-  $content_value = $_GET["content_value"];
+if (!empty($_POST["content_value"]))
+  $content_value = $_POST["content_value"];
 else
   $content_value = NULL;
 

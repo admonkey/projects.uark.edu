@@ -85,6 +85,27 @@ if (!isset($_SESSION["user_key"])) { ?>
   </form>
 </div><!-- /#message_editor -->
 
+<!-- message editor template for cloning -->
+<div id='update_editor' class='message_editor well' style='display:none'>
+  <form method='post' role='form' onsubmit='return false'>
+    <input name='content_key' type='hidden'></input>
+
+    <div id='content_title_div' class='form-group' style='display:none'>
+      <label for='content_title'>Title:</label>
+      <input id='content_title' name='content_title' type='text' class='form-control' disabled required></input>
+    </div>
+    <!-- $(this).prev(".content_title_div").show().find("#content_title").prop("disabled",false); -->
+    <p onclick='$(this).hide().closest(".message_editor").find("#content_title_div").show("slide").find("#content_title").prop("disabled",false).focus()'><label class='label label-success'><a href='javascript:void(0)' style='color:white'><i class='fa fa-plus-circle'></i> Add Title</a></label></p>
+
+    <div class='form-group'>
+      <label for='content_value'>Message (max 1000 characters):</label>
+      <textarea class='form-control' style='width:100%' maxlength='1000' rows='3' name='content_value' required></textarea>
+    </div>
+    <a href='javascript:void(0)' onclick='update_content($(this))' class='btn btn-primary'>Submit</a>
+    <a href='javascript:void(0)' onclick='show_new_content_editor($(this), true)' class='btn btn-danger'>Cancel</a>
+  </form>
+</div><!-- /#message_editor -->
+
 <?php } // END if (!isset($_SESSION["user_key"])) ?>
 
 <?php require_once("_resources/footer.inc.php");?>
@@ -278,8 +299,10 @@ function show_content_editor(element){
   var content_super_container = element.closest(".content_super_container");
   var content_container = content_super_container.children(".content_container");
   var content_editor_super_container = content_super_container.children(".content_editor_super_container");
-  var content_editor = $("#message_editor").clone();
+  var content_editor = $("#update_editor").clone();
   auto_expand_textarea(content_editor.find("textarea"));
+  var content_key = content_container.children("content_data").attr("content_key");
+  content_editor.find("[name=content_key]").val(content_key);
   content_super_container.hide("slide", function(){
     content_editor_super_container.html(content_editor.show());
     content_container.hide();
@@ -289,6 +312,33 @@ function show_content_editor(element){
       }, "slow");
       content_editor.find("textarea").focus()
     });
+  });
+}
+
+function update_content(element){
+  var content_super_container = element.closest(".content_super_container");
+  var content_container = content_super_container.children(".content_container");
+  var content_editor_super_container = content_super_container.children(".content_editor_super_container");
+  var serialized_data = element.closest("form").serialize();
+  
+  //var children_container = element.closest(".content_container").children(".children_container");
+  var content_key = element.closest(".content_super_container").children(".content_container").children("content_data").attr("content_key");
+  $.post('update.content.ajax.php', serialized_data, function(result) {
+    content_super_container.hide("slide", function(){
+      content_editor_super_container.html("");
+      fetch_content(content_key, content_super_container);
+    });
+    
+    /*
+    children_container.hide("slide", function(){
+      var content_editor_well = element.closest(".content_container").children(".content_editor_well");
+      content_editor_well.hide("slide", function(){
+	content_editor_well.html("");
+	children_container.html("");
+	fetch_content_list(parent_content_key, children_container);
+      });
+    });
+    */
   });
 }
 
