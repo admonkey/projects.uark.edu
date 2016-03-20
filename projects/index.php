@@ -302,7 +302,11 @@ function show_content_editor(element){
   var content_editor = $("#update_editor").clone();
   auto_expand_textarea(content_editor.find("textarea"));
   var content_key = content_container.children("content_data").attr("content_key");
+  var content_title = content_container.children("content_data").attr("content_title");
+  var content_value = content_container.children("content_data").attr("content_value");
   content_editor.find("[name=content_key]").val(content_key);
+  content_editor.find("[name=content_title]").val(content_title);
+  content_editor.find("[name=content_value]").val(content_value);
   content_super_container.hide("slide", function(){
     content_editor_super_container.html(content_editor.show());
     content_container.hide();
@@ -328,17 +332,6 @@ function update_content(element){
       content_editor_super_container.html("");
       fetch_content(content_key, content_super_container);
     });
-    
-    /*
-    children_container.hide("slide", function(){
-      var content_editor_well = element.closest(".content_container").children(".content_editor_well");
-      content_editor_well.hide("slide", function(){
-	content_editor_well.html("");
-	children_container.html("");
-	fetch_content_list(parent_content_key, children_container);
-      });
-    });
-    */
   });
 }
 

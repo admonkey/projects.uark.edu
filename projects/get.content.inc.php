@@ -37,6 +37,8 @@ echo "
     parent_content_key='$row[parent_content_key]'
     has_children='$row[has_children]'
     content_key='$row[content_key]'
+    content_title='$row[content_title]'
+    content_value='$row[content_value]'
     content_createdby_user_key='$row[content_createdby_user_key]'
     content_editedby_user_key='$row[content_editedby_user_key]'
   />";
