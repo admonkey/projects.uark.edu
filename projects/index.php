@@ -55,7 +55,7 @@ if (!isset($_SESSION["user_key"])) { ?>
 
 		<div class='form-group'>
 			<label for='content_value'>Message (max 1000 characters):</label>
-			<textarea class='form-control' style='width:100%' maxlength='140' rows='3' id='content_value' name='content_value' required></textarea>
+			<textarea class='form-control' style='width:100%' maxlength='1000' rows='3' id='content_value' name='content_value' required></textarea>
 		</div>
 
 		<button type='submit' class='btn btn-primary'>Submit</button>
@@ -78,7 +78,7 @@ if (!isset($_SESSION["user_key"])) { ?>
 
     <div class='form-group'>
       <label for='content_value'>Message (max 1000 characters):</label>
-      <textarea class='form-control' style='width:100%' maxlength='140' rows='3' name='content_value' required></textarea>
+      <textarea class='form-control' style='width:100%' maxlength='1000' rows='3' name='content_value' required></textarea>
     </div>
     <a href='javascript:void(0)' onclick='reply_content($(this))' class='btn btn-primary'>Submit</a>
     <a href='javascript:void(0)' onclick='show_new_content_editor($(this), true)' class='btn btn-danger'>Cancel</a>
