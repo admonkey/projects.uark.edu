@@ -65,7 +65,7 @@ if (!isset($_SESSION["user_key"])) { ?>
 </div>
 
 <!-- message editor template for cloning -->
-<div id='message_editor' class='message_editor' style='display:none'>
+<div id='message_editor' class='message_editor well' style='display:none'>
   <form method='post' role='form' onsubmit='return false'>
     <input name='parent_content_key' type='hidden'></input>
 
@@ -217,7 +217,12 @@ function submit_project(element){
 
 function show_new_content_editor(element, cancel){
   var content_editor_well = element.closest(".content_container").children(".content_editor_well");
+  var content_editor_super_container = element.closest(".content_super_container").children(".content_editor_super_container");
   if (cancel) {
+    content_editor_super_container.hide("slide", function(){
+      element.closest(".content_super_container").children(".content_container").show("slide");
+      content_editor_super_container.html("").show();
+    });
     content_editor_well.hide("slide", function(){
       content_editor_well.html("");
     });
@@ -267,6 +272,24 @@ function delete_content(content_key, element, undo){
 			});
 		},cache: false});
 	}
+}
+
+function show_content_editor(element){
+  var content_super_container = element.closest(".content_super_container");
+  var content_container = content_super_container.children(".content_container");
+  var content_editor_super_container = content_super_container.children(".content_editor_super_container");
+  var content_editor = $("#message_editor").clone();
+  auto_expand_textarea(content_editor.find("textarea"));
+  content_super_container.hide("slide", function(){
+    content_editor_super_container.html(content_editor.show());
+    content_container.hide();
+    content_super_container.show("slide", function(){
+      $("html, body").animate({
+	  scrollTop: content_editor_super_container.offset().top
+      }, "slow");
+      content_editor.find("textarea").focus()
+    });
+  });
 }
 
 // http://stackoverflow.com/questions/10055299/are-alternate-nested-styles-possible-in-css#answer-10055729
