@@ -4,33 +4,29 @@
 $include_mysqli = true;
 require_once("_resources/header.inc.php");
 
-// SANITIZE USER INPUT!
+// get the values
 $content_key = $_GET["content_key"];
 $vote_value = $_GET["vote_value"];
 
 if(!empty($_GET["user_key"]))
   $user_key = $_GET["user_key"];
 
-// Check if vote already exists.
+// sanitize the values
+if (valid_positive_integer($content_key) && valid_positive_integer($user_key)) {
 
-$sql = "SELECT vote_value FROM Votes WHERE user_key = $user_key AND content_key = $content_key";
-
-if( !empty($mysqli_connected) ){
-  $result = $mysqli_connection->query($sql) or die($mysqli_connection->error);
-}
-
-// Update the vote if it already exists.
-if(!empty($result)){
-  $sql = "UPDATE Votes SET vote_value = $vote_value WHERE user_key = $user_key AND content_key = $content_key"; 
-  if( !empty($mysqli_connected) ){
-	$result = $mysqli_connection->query($sql) or die($mysqli_connection->error);
-  }
-}
-// Insert a new record if the vote if it does not exist.
-else {
-	$sql = "INSERT INTO Votes (user_key, content_key, vote_value) VALUES ($user_key, $content_key, $vote_value)";
-	if( !empty($mysqli_connected) ){
-	$result = $mysqli_connection->query($sql) or die($mysqli_connection->error);
+	if ($vote_value == (-2) || $vote_value == (-1) || $vote_value == 1) {
+		// call the sql precedue to do the voting
+		$sql = "CALL create_vote(?,?,?)";
+		// Call create_vote
+		if (!($stmt = $mysqli_connection->prepare($sql))) {
+			echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
+		}
+		else {
+			$stmt->bind_param('iii', $user_key, $content_key, $vote_value);
+			if (!$stmt->execute()) {
+				echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+			}
+		}
 	}
 }
 
