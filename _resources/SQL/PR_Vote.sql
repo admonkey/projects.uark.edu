@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS create_vote;
+
 DELIMITER $$
 CREATE PROCEDURE create_vote (
   IN p_user_key INT,

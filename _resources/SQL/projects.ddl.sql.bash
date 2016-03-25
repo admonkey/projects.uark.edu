@@ -10,6 +10,7 @@ include_fake_data=true
 # must be in proper order for drop/add with key relationships
 ddl_files=( \
   "_resources/SQL/projects.ddl.sql"\
+  "_resources/SQL/PR_Vote.sql"\
   "_resources/SQL/projects.seed.sql"\
   "_resources/SQL/createusers.sql"
 )
@@ -25,6 +26,9 @@ cd $( dirname "${BASH_SOURCE[0]}" )
 if [ -f credentials_local.bash ]; then
   source credentials_local.bash
 fi
+
+# backup data
+# mysqldump --no-create-info --no-create-db --host=$database_server --user=$database_user --password=$database_password --databases $database_name
 
 # move to site root directory
 cd ../..

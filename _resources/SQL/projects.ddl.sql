@@ -171,7 +171,7 @@ DROP PROCEDURE IF EXISTS update_content;
 DROP PROCEDURE IF EXISTS fetch_children;
 DROP PROCEDURE IF EXISTS read_content;
 DROP PROCEDURE IF EXISTS get_content;
-DROP PROCEDURE IF EXISTS create_vote;
+
 DROP PROCEDURE IF EXISTS test_proc;
 DROP PROCEDURE IF EXISTS create_reply;
 DROP FUNCTION IF EXISTS authorize_content_editor;
