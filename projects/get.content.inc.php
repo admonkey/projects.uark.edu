@@ -27,7 +27,22 @@ if (!empty($row["content_editedby_user_key"])) echo "
     <a href='$path_web_root/Profiles/?user_key=$row[content_editedby_user_key]'>$row[content_editedby_username]</a>
   </label>
 ";
-  
+
+?>
+
+<!-- jqvoter template -->
+<div class='row' style='margin-top:10px'>
+  <div class='col-xs-1'>
+    <div class="upvote">
+        <a class="upvote" title="This is good stuff. Vote it up! (Click again to undo)"></a>
+        <span class="count" title="Total number of votes">0</span>
+        <a class="downvote" title="This is not useful. Vote it down. (Click again to undo)"></a>
+        <a class="star" title="Mark as favorite. (Click again to undo)"></a>
+    </div>
+  </div>
+  <div class='col-xs-11'>
+<?php
+
 echo "
   <p style='margin-top: 10px;'>$row[content_value]</p>
 
@@ -51,7 +66,7 @@ if(!empty($_SESSION["user_key"]))
 	<label class='label label-warning'><a href='javascript:void(0)' onclick='show_content_editor($(this))'>Edit</a></label>
 	<label class='label label-danger'><a href='javascript:void(0)' onclick='delete_content($row[content_key], $(this), false)'>Delete</a></label>
       ";
-  echo "</p>";
+  echo "</p></div></div>";
 
 echo "<div class='content_editor_well' style='display:none'></div>
   <div class='children_container' style='margin-top:10px'>";

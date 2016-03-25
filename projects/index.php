@@ -106,6 +106,17 @@ if (!isset($_SESSION["user_key"])) { ?>
   </form>
 </div><!-- /#message_editor -->
 
+
+<!-- jqvoter template -->
+<div id="templates" class="hidden">
+    <div class="upvote">
+        <a class="upvote" title="This is good stuff. Vote it up! (Click again to undo)"></a>
+        <span class="count" title="Total number of votes"></span>
+        <a class="downvote" title="This is not useful. Vote it down. (Click again to undo)"></a>
+        <a class="star" title="Mark as favorite. (Click again to undo)"></a>
+    </div>
+</div>
+
 <?php } // END if (!isset($_SESSION["user_key"])) ?>
 
 <?php require_once("_resources/footer.inc.php");?>
@@ -166,6 +177,7 @@ function fetch_content_list(parent_content_key, insert_div){
 	  $("html, body").animate({
 	      scrollTop: (insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:5000} ).offset().top) - (0.75*screen.height)
 	  }, "slow");
+	  $(".upvote").upvote();
 	});
       }
     });
@@ -181,6 +193,7 @@ function fetch_content(content_key, insert_div){
 	history.pushState({}, null, "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
 	if(insert_div.is($("#thread_div")))
 	  fetch_content_list(content_key, $("#thread_div").find(".children_container"));
+        $(".upvote").upvote();
       }
     });
   });
@@ -360,7 +373,10 @@ jQuery(function($) {
     };
 });
 
-$(fetch_content_table(null, $("#list_of_projects_div")));
+$(function(){
+  $(fetch_content_table(null, $("#list_of_projects_div")));
+  $(".upvote").upvote();
+});
 
 <?php if(!empty($_GET["content_key"])) echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));"; ?>
 
@@ -457,3 +473,6 @@ function update_message_submit(element) {
 }
 
 </script>
+<script src="<?php echo "$path_web_root/"; ?>_resources/jqvote/lib/jquery.upvote.js"></script>
+<script src="<?php echo "$path_web_root/"; ?>_resources/jqvote/lib/jquery.upvote.js"></script>
+<link rel="stylesheet" href="<?php echo "$path_web_root/"; ?>_resources/jqvote/lib/jquery.upvote.css"></link>
