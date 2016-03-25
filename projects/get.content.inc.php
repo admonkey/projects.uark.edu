@@ -44,14 +44,18 @@ echo "
   />";
   
 if(!empty($_SESSION["user_key"]))
-  echo "<p>
+  echo "
+  <div class='content_controls'>
+      <i class='fa fa-arrow-up fa-4'></i><br/>
+      <i class='fa fa-times-circle fa-1' style='margin-left: 1px'></i><br/>
+      <i class='fa fa-arrow-down fa-4'></i>
     <label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label>";
     if($row["authorized_editor"] === "1" || $row["content_createdby_user_key"] == @$_SESSION["user_key"])
       echo "
 	<label class='label label-warning'><a href='javascript:void(0)' onclick='show_content_editor($(this))'>Edit</a></label>
 	<label class='label label-danger'><a href='javascript:void(0)' onclick='delete_content($row[content_key], $(this), false)'>Delete</a></label>
       ";
-  echo "</p>";
+  echo "</div>";
 
 echo "<div class='content_editor_well' style='display:none'></div>
   <div class='children_container' style='margin-top:10px'>";
