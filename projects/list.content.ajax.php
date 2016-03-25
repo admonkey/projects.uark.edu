@@ -7,50 +7,70 @@ if (valid_positive_integer(@$_GET["parent_content_key"]))
 else
   $parent_content_key = "NULL";
 
+if (!empty($_SESSION["user_key"]))
+  $user_key = $_SESSION["user_key"];
+else
+  $user_key = "NULL";
+
 if( !empty($mysqli_connected) ){
     
-  $result = $mysqli_connection->query("CALL fetch_children($parent_content_key)") or die($mysqli_connection->error);
-  $numfields = $result->field_count;
+  $result = $mysqli_connection->query("CALL fetch_children($parent_content_key,$user_key)") or die($mysqli_connection->error);
 
-  // open table
-  echo "
-    <table border=1>
-      <thead>
-	<tr>
-	  <th>content_title</th>
-	  <th>content_creation_time</th>
-	  <th>content_createdby_user_key</th>
-	  <th>content_edited_time</th>
-	  <th>content_editedby_user_key</th>
-	</tr>
-      </thead>
-      <tbody>
-  ";
+  if(isset($_GET["list"])){ // BEGIN IF list
 
-  // data
-  while ($row = $result->fetch_assoc())
-    echo "
-      <tr>
-	<td>
-	  <content_data content_key='$row[content_key]' content_title='$row[content_title]' content_value='$row[content_value]' project_key='$row[project_key]' thread_key='$row[thread_key]' has_children='$row[has_children]'/>
-	  $row[content_title]
-	</td>
-	<td>$row[content_creation_time]</td>
-	<td>$row[content_createdby_user_key]</td>
-	<td>$row[content_edited_time]</td>
-	<td>$row[content_editedby_user_key]</td>
-      </tr>
-    ";
-  
-    // close table
-    echo "
-	</tbody>
-      </table>
+    while ($row = $result->fetch_assoc()){
+
+      include("get.content.inc.php");
       
-      <script>
-	$(hyperlink_row());
-      </script>
+    }
+
+  } else { // END IF list, BEGIN IF table
+
+    // open table
+    echo "
+      <table border=1>
+	<thead>
+	  <tr>
+	    <th>Title</th>
+	    <th>Created</th>
+	    <th>Created By</th>
+	    <th>Last Edited</th>
+	    <th>Edited By</th>
+	  </tr>
+	</thead>
+	<tbody>
     ";
+
+    // data
+    while ($row = $result->fetch_assoc())
+      echo "
+	<tr class='hover' onclick='click_row($(this))'>
+	  <td>
+	    <content_data
+	      project_key='$row[project_key]'
+	      thread_key='$row[thread_key]'
+	      parent_content_key='$row[parent_content_key]'
+	      has_children='$row[has_children]'
+	      content_key='$row[content_key]'
+	      content_createdby_user_key='$row[content_createdby_user_key]'
+	      content_editedby_user_key='$row[content_editedby_user_key]'
+	    />
+	    $row[content_title]
+	  </td>
+	  <td>$row[content_creation_time]</td>
+	  <td>$row[content_createdby_username]</td>
+	  <td>$row[content_edited_time]</td>
+	  <td>$row[content_editedby_username]</td>
+	</tr>
+      ";
+    
+      // close table
+      echo "
+	  </tbody>
+	</table>
+      ";
+
+  } // END IF table
 
 } else {
 

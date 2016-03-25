@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS Forum_Messages;
-DROP TABLE IF EXISTS Forum_Threads;

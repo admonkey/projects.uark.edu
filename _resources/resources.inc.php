@@ -22,6 +22,11 @@ function valid_positive_integer($supposed_positive_integer){
   return ( !empty($supposed_positive_integer) && is_numeric($supposed_positive_integer) && $supposed_positive_integer > 0 );
 }
 
+// http://stackoverflow.com/questions/834303/startswith-and-endswith-functions-in-php#answer-7168986
+function substr_startswith($haystack, $needle) {
+    return substr($haystack, 0, strlen($needle)) === $needle;
+}
+
 function mysqlo_prepare_input($text){
 
 	$text = htmlentities($text);

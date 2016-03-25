@@ -1,17 +1,17 @@
 -- TABLES --
--- old
+DROP TABLE IF EXISTS Forum_Messages;
+DROP TABLE IF EXISTS Forum_Threads;
 DROP TABLE IF EXISTS Link_Groups_Content;
 DROP TABLE IF EXISTS Link_Groups_Users_History;
 DROP TABLE IF EXISTS Link_Groups_Users;
-DROP TABLE IF EXISTS Groups_History;
-DROP TABLE IF EXISTS Groups;
--- current
 DROP TABLE IF EXISTS Votes_History;
 DROP TABLE IF EXISTS Votes;
 DROP TABLE IF EXISTS Content_Editors_History;
 DROP TABLE IF EXISTS Content_Editors;
 DROP TABLE IF EXISTS Content_History;
 DROP TABLE IF EXISTS Content;
+DROP TABLE IF EXISTS Groups_History;
+DROP TABLE IF EXISTS Groups;
 DROP TABLE IF EXISTS Users_History;
 DROP TABLE IF EXISTS Users;
 
@@ -169,9 +169,12 @@ DROP PROCEDURE IF EXISTS login_shib_user;
 DROP PROCEDURE IF EXISTS create_content;
 DROP PROCEDURE IF EXISTS update_content;
 DROP PROCEDURE IF EXISTS fetch_children;
--- TODO:
 DROP PROCEDURE IF EXISTS read_content;
-DROP PROCEDURE IF EXISTS delete_content;
+DROP PROCEDURE IF EXISTS get_content;
+DROP PROCEDURE IF EXISTS create_vote;
+DROP PROCEDURE IF EXISTS test_proc;
+DROP PROCEDURE IF EXISTS create_reply;
+DROP FUNCTION IF EXISTS authorize_content_editor;
 
 DELIMITER $$
 
@@ -212,12 +215,83 @@ this_procedure:BEGIN
 
 END $$
 
+CREATE FUNCTION authorize_content_editor (
+  p_user_key INT,
+  p_content_key INT
+)
+RETURNS VARCHAR(20)
+BEGIN
+
+  DECLARE valid_user_key INT DEFAULT NULL;
+  DECLARE valid_content_key INT DEFAULT NULL;
+  DECLARE valid_thread_key INT DEFAULT NULL;
+  DECLARE valid_project_key INT DEFAULT NULL;
+  DECLARE authorized_user_key INT DEFAULT NULL;
+
+  -- parameter validation
+  SELECT user_key
+  INTO valid_user_key
+  FROM Users
+  WHERE user_key = p_user_key;
+  IF valid_user_key IS NULL THEN
+    RETURN 'invalid p_user_key';
+  END IF;
+
+  SELECT content_key, thread_key, project_key
+  INTO valid_content_key, valid_thread_key, valid_project_key
+  FROM Content
+  WHERE content_key = p_content_key;
+  IF valid_content_key IS NULL THEN
+    RETURN 'invalid p_content_key';
+  END IF;
+
+  -- for performance considerations, authority is restricted to three tiers
+  -- content, thread, project
+  SELECT user_key
+  INTO authorized_user_key
+  FROM Content_Editors
+  WHERE user_key = valid_user_key
+    AND (
+      content_key = valid_content_key OR
+      content_key = valid_thread_key OR
+      content_key = valid_project_key
+    )
+  LIMIT 1;
+
+  IF authorized_user_key IS NOT NULL THEN
+    RETURN 'authorized';
+  END IF;
+  
+  SELECT content_createdby_user_key
+  INTO authorized_user_key
+  FROM Content
+  WHERE content_createdby_user_key = valid_user_key
+    AND content_key = valid_content_key;
+  
+  IF authorized_user_key IS NOT NULL THEN
+    RETURN 'authorized';
+  ELSE
+    RETURN 'UNAUTHORIZED';
+  END IF;
+
+END $$
+
+CREATE PROCEDURE create_reply(
+  p_content_createdby_user_key INT,
+  p_parent_content_key INT,
+  p_content_value VARCHAR(1000)
+)
+this_procedure:BEGIN
+
+  CALL create_content(p_content_createdby_user_key,p_parent_content_key,NULL,p_content_value);
+
+END $$
 
 CREATE PROCEDURE create_content (
   p_content_createdby_user_key INT,
   p_parent_content_key INT,
   p_content_title VARCHAR(100),
-  p_content_value VARCHAR(100)
+  p_content_value VARCHAR(1000)
 )
 this_procedure:BEGIN
 
@@ -312,24 +386,71 @@ this_procedure:BEGIN
     TRUE,
     valid_content_createdby_user_key
   );
+  
+  SELECT new_content_key AS 'new_content_key';
+
+END $$
+
+
+CREATE PROCEDURE get_content (
+  IN p_content_key INT,
+  IN children BOOLEAN,
+  IN p_user_key INT
+)
+this_procedure:BEGIN
+
+  DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
+  DECLARE authorized_editor BOOLEAN DEFAULT 0;
+  
+  IF p_user_key IS NOT NULL AND p_content_key IS NOT NULL THEN
+    SET authorization_msg = authorize_content_editor(p_user_key,p_content_key);
+    IF authorization_msg = 'authorized' THEN
+      SET authorized_editor = 1;
+    END IF;
+  END IF;
+
+  SELECT c.*,
+    uc.username AS 'content_createdby_username',
+    ue.username AS 'content_editedby_username',
+    authorized_editor
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Users ue
+    ON c.content_editedby_user_key = ue.user_key
+  WHERE
+    
+    IF(children = TRUE,
+      IF(p_content_key IS NULL,
+	parent_content_key IS NULL,
+	parent_content_key = p_content_key
+      )
+      AND content_key > 0,
+    -- else
+      content_key = p_content_key
+    )
+    AND content_deleted = FALSE;
+
+END $$
+
+CREATE PROCEDURE read_content (
+  IN p_content_key INT,
+  IN p_user_key INT
+)
+this_procedure:BEGIN
+
+  CALL get_content(p_content_key,FALSE,p_user_key);
 
 END $$
 
 
 CREATE PROCEDURE fetch_children (
-  IN p_parent_content_key INT
+  IN p_parent_content_key INT,
+  IN p_user_key INT
 )
 this_procedure:BEGIN
 
-  SELECT *
-  FROM Content
-  WHERE
-    IF(p_parent_content_key IS NULL,
-      parent_content_key IS NULL,
-      parent_content_key = p_parent_content_key
-    )
-    AND content_key > 0
-    AND content_deleted = FALSE;
+  CALL get_content(p_parent_content_key,TRUE,p_user_key);
 
 END $$
 
@@ -343,13 +464,32 @@ CREATE PROCEDURE update_content (
 )
 this_procedure:BEGIN
 
-  -- validate content exists
+  DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
   DECLARE valid_content_key INT DEFAULT NULL;
+  DECLARE valid_content_editedby_user_key INT DEFAULT NULL;
+  
+  -- validate
   SELECT content_key INTO valid_content_key
   FROM Content
   WHERE content_key = p_content_key;
   IF valid_content_key IS NULL THEN
     SELECT 'content key does not exist' AS 'ERROR';
+    LEAVE this_procedure;
+  END IF;
+
+  SELECT user_key
+  INTO valid_content_editedby_user_key
+  FROM Users
+  WHERE user_key = p_user_key;
+  IF valid_content_editedby_user_key IS NULL THEN
+    SELECT 'invalid p_content_createdby_user_key' AS 'ERROR';
+    LEAVE this_procedure;
+  END IF;
+
+  -- authorize
+  SET authorization_msg = authorize_content_editor(valid_content_editedby_user_key,valid_content_key);
+  IF authorization_msg <> 'authorized' THEN
+    SELECT authorization_msg AS 'ERROR';
     LEAVE this_procedure;
   END IF;
 
@@ -359,7 +499,6 @@ this_procedure:BEGIN
     content_value,
     project_key,
     thread_key,
-    group_key,
     parent_content_key,
     has_children,
     content_key,
@@ -373,7 +512,6 @@ this_procedure:BEGIN
     content_value,
     project_key,
     thread_key,
-    group_key,
     parent_content_key,
     has_children,
     content_key,
@@ -383,27 +521,38 @@ this_procedure:BEGIN
     content_editedby_user_key,
     content_deleted
   FROM Content
-  WHERE content_key = p_content_key;
+  WHERE content_key = valid_content_key;
 
   -- update current record
   IF p_content_title IS NOT NULL THEN
     UPDATE Content
     SET content_title = p_content_title
-    WHERE content_key = p_content_key;
+    WHERE content_key = valid_content_key;
   END IF;
 
   IF p_content_value IS NOT NULL THEN
     UPDATE Content
     SET content_value = p_content_value
-    WHERE content_key = p_content_key;
+    WHERE content_key = valid_content_key;
   END IF;
 
   IF p_content_deleted IS NOT NULL THEN
     UPDATE Content
     SET content_deleted = p_content_deleted
-    WHERE content_key = p_content_key;
+    WHERE content_key = valid_content_key;
   END IF;
-
+  
+  UPDATE Content
+  SET content_edited_time = CURRENT_TIMESTAMP,
+      content_editedby_user_key = p_user_key
+  WHERE content_key = valid_content_key;
+  
+  IF p_content_deleted = TRUE THEN
+    SELECT 'deleted' AS 'success';
+  ELSE
+    SELECT 'updated' AS 'success';
+  END IF;
+  
 END $$
 
 DELIMITER ;
