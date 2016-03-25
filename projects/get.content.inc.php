@@ -46,7 +46,7 @@ echo "
 if(!empty($_SESSION["user_key"]))
   echo "<p>
     <label class='label label-primary'><a href='javascript:void(0)' onclick='show_new_content_editor($(this), false)'>Reply</a></label>";
-    if($row["authorized_editor"] === "1" || $row["content_createdby_user_key"] == $_SESSION["user_key"])
+    if($row["authorized_editor"] === "1" || $row["content_createdby_user_key"] == @$_SESSION["user_key"])
       echo "
 	<label class='label label-warning'><a href='javascript:void(0)' onclick='show_content_editor($(this))'>Edit</a></label>
 	<label class='label label-danger'><a href='javascript:void(0)' onclick='delete_content($row[content_key], $(this), false)'>Delete</a></label>
