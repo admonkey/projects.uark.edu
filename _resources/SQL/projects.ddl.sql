@@ -401,35 +401,43 @@ this_procedure:BEGIN
 
   DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
   DECLARE authorized_editor BOOLEAN DEFAULT 0;
-  
+
   IF p_user_key IS NOT NULL AND p_content_key IS NOT NULL THEN
     SET authorization_msg = authorize_content_editor(p_user_key,p_content_key);
     IF authorization_msg = 'authorized' THEN
       SET authorized_editor = 1;
     END IF;
+    -- get user vote
+--     SELECT vote_value INTO my_vote
+--     FROM Votes
+--     WHERE content_key = p_content_key
+--       AND user_key = p_user_key;
   END IF;
 
   SELECT c.*,
     uc.username AS 'content_createdby_username',
     ue.username AS 'content_editedby_username',
     authorized_editor
+    ,SUM(vote_value) AS 'total_votes'
   FROM Content c
   LEFT JOIN Users uc
     ON c.content_createdby_user_key = uc.user_key
   LEFT JOIN Users ue
     ON c.content_editedby_user_key = ue.user_key
+  LEFT JOIN Votes v
+    ON c.content_key = v.content_key
   WHERE
-    
     IF(children = TRUE,
       IF(p_content_key IS NULL,
 	parent_content_key IS NULL,
 	parent_content_key = p_content_key
       )
-      AND content_key > 0,
+      AND c.content_key > 0,
     -- else
-      content_key = p_content_key
+      c.content_key = p_content_key
     )
-    AND content_deleted = FALSE;
+    AND content_deleted = FALSE
+  GROUP BY c.content_key;
 
 END $$
 

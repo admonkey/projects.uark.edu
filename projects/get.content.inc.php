@@ -35,7 +35,7 @@ if (!empty($row["content_editedby_user_key"])) echo "
   <div class='col-xs-1'>
     <div class="upvote">
         <a class="upvote" title="This is good stuff. Vote it up! (Click again to undo)" onclick="vote_content(<?php echo "$row[content_key],1"; ?>)"></a>
-        <span class="count" title="Total number of votes">0</span>
+        <span class="count" title="Total number of votes"><?php echo "$row[total_votes]"; ?></span>
         <a class="downvote" title="This is not useful. Vote it down. (Click again to undo)" onclick="vote_content(<?php echo "$row[content_key],-1"; ?>)"></a>
         <!--<a class="star" title="Mark as favorite. (Click again to undo)"></a>-->
     </div>
