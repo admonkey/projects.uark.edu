@@ -22,6 +22,11 @@ if (!($stmt = $mysqli_connection->prepare($sql))) {
   $stmt->bind_param('iii', $user_key, $content_key, $vote_value);
   if (!$stmt->execute()) {
     echo "Execute failed: (" . $stmt->errno . ") ";
+  } else {
+    $stmt->store_result();
+    $stmt->bind_result($response);
+    $stmt->fetch();
+    echo "$response";
   }
 }
 
