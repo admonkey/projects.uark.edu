@@ -189,11 +189,11 @@ function fetch_content(content_key, insert_div){
     $.ajax({url: "read.content.ajax.php?content_key="+content_key, 
       success: function(result){
 	insert_div.html(result);
+	insert_div.find(".upvote").upvote();
 	insert_div.show("blind");
 	history.pushState({}, null, "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
 	if(insert_div.is($("#thread_div")))
 	  fetch_content_list(content_key, $("#thread_div").find(".children_container"));
-        $(".upvote").upvote();
       }
     });
   });
