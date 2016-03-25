@@ -177,7 +177,7 @@ function fetch_content_list(parent_content_key, insert_div){
 	  $("html, body").animate({
 	      scrollTop: (insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:5000} ).offset().top) - (0.75*screen.height)
 	  }, "slow");
-	  $(".upvote").upvote();
+	  insert_div.find(".upvote").upvote();
 	});
       }
     });
@@ -346,6 +346,12 @@ function update_content(element){
       fetch_content(content_key, content_super_container);
     });
   });
+}
+
+function vote_content(content_key,vote_value){
+  $.ajax({url: "vote.ajax.php?content_key=" + content_key + "&vote_value=" + vote_value, success: function(result){
+    console.log(result);
+  }});
 }
 
 // http://stackoverflow.com/questions/10055299/are-alternate-nested-styles-possible-in-css#answer-10055729
