@@ -24,7 +24,7 @@ if (valid_positive_integer($content_key) && valid_positive_integer($user_key)) {
 		else {
 			$stmt->bind_param('iii', $user_key, $content_key, $vote_value);
 			if (!$stmt->execute()) {
-				echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+				echo "Execute failed: (" . $stmt->errno . ") ";
 			}
 		}
 	}
