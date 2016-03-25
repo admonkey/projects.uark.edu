@@ -41,12 +41,6 @@ this_procedure:BEGIN
   WHERE content_key = p_content_key
     AND user_key = p_user_key;
              
-  IF existing_vote_value = p_vote_value THEN
-      -- Already voted with same value
-      SELECT 'already voted this way' AS 'message';
-      LEAVE this_procedure;
-  END IF;
-
   -- create audit history
   IF (existing_vote_time IS NOT NULL) THEN
     INSERT INTO Votes_History (content_key, user_key, vote_value,  vote_creation_time)
@@ -57,10 +51,15 @@ this_procedure:BEGIN
   DELETE FROM Votes
   WHERE content_key = p_content_key 
   AND user_key = p_user_key;
-        
-  INSERT INTO Votes (content_key, user_key, vote_value) VALUES (p_content_key,p_user_key,p_vote_value);
-  
-  SELECT 'created new vote' AS 'message';
+
+  IF existing_vote_value = p_vote_value THEN
+      -- Already voted with same value
+      SELECT 'deleted vote' AS 'message';
+      LEAVE this_procedure;
+  ELSE
+    INSERT INTO Votes (content_key, user_key, vote_value) VALUES (p_content_key,p_user_key,p_vote_value);
+    SELECT 'created new vote' AS 'message';
+  END IF;
     
 END $$
 
