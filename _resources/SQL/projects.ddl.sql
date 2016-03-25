@@ -418,7 +418,8 @@ this_procedure:BEGIN
     uc.username AS 'content_createdby_username',
     ue.username AS 'content_editedby_username',
     authorized_editor
-    ,SUM(vote_value) AS 'total_votes'
+    ,SUM(v.vote_value) AS 'total_votes'
+    ,mv.vote_value AS 'my_vote'
   FROM Content c
   LEFT JOIN Users uc
     ON c.content_createdby_user_key = uc.user_key
@@ -426,6 +427,8 @@ this_procedure:BEGIN
     ON c.content_editedby_user_key = ue.user_key
   LEFT JOIN Votes v
     ON c.content_key = v.content_key
+  LEFT JOIN Votes mv
+    ON c.content_key = mv.content_key AND mv.user_key = p_user_key
   WHERE
     IF(children = TRUE,
       IF(p_content_key IS NULL,
