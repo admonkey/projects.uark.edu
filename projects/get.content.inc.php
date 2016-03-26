@@ -55,7 +55,7 @@ if (!empty($row["content_editedby_user_key"])) echo "
 <?php
 
 echo "
-  <p style='margin-top: 10px;'>$row[content_value]</p>
+  <p class='content_value' style='margin-top: 10px;'>$row[content_value]</p>
 
   <content_data id='content_data_key_$row[content_key]'
     project_key='$row[project_key]'

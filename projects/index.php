@@ -325,7 +325,7 @@ function show_content_editor(element){
   console.log(content_key);
   var content_title = content_container.find("content_data").attr("content_title");
   console.log(content_title);
-  var content_value = content_container.find("content_data").attr("content_value");
+  var content_value = content_container.find(".content_value").first().text();
   console.log(content_value);
   content_editor.find("[name=content_key]").val(content_key);
   content_editor.find("[name=content_title]").val(content_title);
