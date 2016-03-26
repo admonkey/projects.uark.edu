@@ -310,13 +310,19 @@ function delete_content(content_key, element, undo){
 
 function show_content_editor(element){
   var content_super_container = element.closest(".content_super_container");
+  console.log(content_super_container);
   var content_container = content_super_container.children(".content_container");
+  console.log(content_container);
   var content_editor_super_container = content_super_container.children(".content_editor_super_container");
+  console.log(content_editor_super_container);
   var content_editor = $("#update_editor").clone();
   auto_expand_textarea(content_editor.find("textarea"));
-  var content_key = content_container.children("content_data").attr("content_key");
-  var content_title = content_container.children("content_data").attr("content_title");
-  var content_value = content_container.children("content_data").attr("content_value");
+  var content_key = content_container.find("content_data").attr("content_key");
+  console.log(content_key);
+  var content_title = content_container.find("content_data").attr("content_title");
+  console.log(content_title);
+  var content_value = content_container.find("content_data").attr("content_value");
+  console.log(content_value);
   content_editor.find("[name=content_key]").val(content_key);
   content_editor.find("[name=content_title]").val(content_title);
   content_editor.find("[name=content_value]").val(content_value);
@@ -339,7 +345,7 @@ function update_content(element){
   var serialized_data = element.closest("form").serialize();
   
   //var children_container = element.closest(".content_container").children(".children_container");
-  var content_key = element.closest(".content_super_container").children(".content_container").children("content_data").attr("content_key");
+  var content_key = content_container.find("content_data").attr("content_key");
   $.post('update.content.ajax.php', serialized_data, function(result) {
     content_super_container.hide("slide", function(){
       content_editor_super_container.html("");
