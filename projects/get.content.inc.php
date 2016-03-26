@@ -82,7 +82,7 @@ if(!empty($_SESSION["user_key"]))
 echo "<div class='content_editor_well' style='display:none'></div>
   <div class='children_container' style='margin-top:10px'>";
   
-if( !empty($row["has_children"]) && $row["project_key"] !== $row["content_key"] )
+if( !empty($row["has_children"]) )
   echo "
     <label class='label label-success'>
       <a 
