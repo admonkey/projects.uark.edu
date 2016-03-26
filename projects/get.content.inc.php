@@ -30,13 +30,24 @@ if (!empty($row["content_editedby_user_key"])) echo "
 
 ?>
 
+<?php
+  // if logged in, activate jqvoter, else link to login
+  if(!empty($_SESSION["user_key"])){
+    $onclick_upvote = "vote_content($row[content_key],1)";
+    $onclick_downvote = "vote_content($row[content_key],-1)";
+  } else {
+    $onclick_upvote = "$login_page";
+    $onclick_downvote = "$login_page";
+  }
+?>
+
 <!-- jqvoter template -->
 <div class='row' style='margin-top:10px'>
   <div class='col-xs-1'>
-    <div class="upvote">
-        <a class="upvote <?php if($row["my_vote"]==1) echo "upvote-on"; ?>" title="This is good stuff. Vote it up! (Click again to undo)" onclick="vote_content(<?php echo "$row[content_key],1"; ?>)"></a>
+    <div class='upvote'>
+        <a class="upvote <?php if($row["my_vote"]==1) echo "upvote-on"; ?>" title="This is good stuff. Vote it up! (Click again to undo)" onclick='<?php echo "$onclick_upvote"; ?>'></a>
         <span class="count" title="Total number of votes"><?php echo "$row[total_votes]"; ?></span>
-        <a class="downvote <?php if($row["my_vote"]==-1) echo "downvote-on"; ?>" title="This is not useful. Vote it down. (Click again to undo)" onclick="vote_content(<?php echo "$row[content_key],-1"; ?>)"></a>
+        <a class="downvote <?php if($row["my_vote"]==-1) echo "downvote-on"; ?>" title="This is not useful. Vote it down. (Click again to undo)" onclick='<?php echo "$onclick_downvote"; ?>'></a>
         <!--<a class="star" title="Mark as favorite. (Click again to undo)"></a>-->
     </div>
   </div>
