@@ -213,8 +213,11 @@ function click_row(tr){
 
 function reply_content(element){
   var serialized_data = element.closest("form").serialize();
+  console.log("reply: serialized_data = " + serialized_data);
   var children_container = element.closest(".content_container").children(".children_container");
-  var parent_content_key = element.closest(".content_container").children("content_data").attr("content_key");
+  console.log("reply: children_container = " + children_container);
+  var parent_content_key = element.closest(".content_container").find("content_data").attr("content_key");
+  console.log("reply: parent_content_key = " + parent_content_key);
   $.post('reply.content.ajax.php', serialized_data, function(result) {
     children_container.hide("slide", function(){
       var content_editor_well = element.closest(".content_container").children(".content_editor_well");
@@ -263,7 +266,8 @@ function show_new_content_editor(element, cancel){
   } else {
     var content_editor = $("#message_editor").clone();
     auto_expand_textarea(content_editor.find("textarea"));
-    var parent_content_key = element.closest(".content_container").children("content_data").attr("content_key");
+    var parent_content_key = element.closest(".content_container").find("content_data").attr("content_key");
+    console.log("parent key = " + parent_content_key);
     content_editor.find("[name=parent_content_key]").val(parent_content_key);
     //message_editor.find("textarea").val(message_body_well.find(".message_text").prop("innerHTML").replace(/<br>/g, ""));
     content_editor_well.hide("slide", function(){
