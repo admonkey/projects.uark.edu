@@ -10,8 +10,18 @@ if(empty($_GET["content_key"])) echo "<h1>$section_title</h1>";
 ?>
 <p class='lead'>Make sure you have read <a href='rules.php'>the rules</a>.</p>
 
+<?php
+if(empty($_GET["content_key"])) {
+  $show_projects_link = "javascript:toggle_list($(\"#show_list_of_projects\"), $(\"#list_of_projects_div\"))";
+  $show_projects_class = "class='btn btn-warning'>Hide Projects";
+} else {
+  $show_projects_link = "./";
+  $show_projects_class = "class='btn btn-success'>Show Projects";
+}
+?>
+
 <div id='page_controls' class='row'>
-  <div class='col-xs-4'><p><a btn-text='Projects' btn-show='false' id='show_list_of_projects' href='javascript:toggle_list($("#show_list_of_projects"), $("#list_of_projects_div"))' class='btn btn-warning'>Hide Projects</a></p></div>
+  <div class='col-xs-4'><p><a btn-text='Projects' btn-show='false' id='show_list_of_projects' href='<?php echo "$show_projects_link"; ?>' <?php echo "$show_projects_class"; ?></a></p></div>
   <!--<div class='col-xs-4'><p><a id='show_list_of_threads' href='javascript:fetch_threads()' class='btn btn-primary'>Show Threads</a></p></div>-->
   <?php if (isset($_SESSION["user_key"])) { ?>
     <div class='col-xs-4'><p><a href='javascript:create_project()' class='btn btn-success'>Create New Project</a></p></div>
@@ -390,11 +400,16 @@ jQuery(function($) {
 });
 
 $(function(){
-  $(fetch_content_table(null, $("#list_of_projects_div")));
+  
   $(".upvote").upvote();
 });
 
-<?php if(!empty($_GET["content_key"])) echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));"; ?>
+<?php if(!empty($_GET["content_key"])) {
+  echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));";
+} else {
+  ?>$(fetch_content_table(null, $("#list_of_projects_div")));<?php
+}
+?>
 
 </script>
 <script src="<?php echo "$path_web_root/"; ?>_resources/jqvote/lib/jquery.upvote.js"></script>
