@@ -5,25 +5,26 @@ database_user="username"
 database_password="p@55W0rd"
 database_name="projects_dev"
 
-include_ddl=false
+drop_tables=false
+include_ddl=true
 include_sp=true
-include_fake_data=false
+include_seed_data=false
 
-# must be in proper order for drop/add with key relationships
+drop_table_scripts=( \
+  "projects.drop.sql"
+)
 ddl_files=( \
-  "_resources/SQL/projects.ddl.sql"\
-  "_resources/SQL/projects.seed.sql"
+  "projects.ddl.sql"
 )
 sp_files=( \
-  "_resources/SQL/projects.sp.sql"\
-  "_resources/SQL/PR_Vote.sql"
+  "projects.sp.sql"\
+  "PR_Vote.sql"
 )
-fake_data_files=( \
-  "_resources/SQL/createusers.sql"\
-  "projects/_resources/SQL/projects.fakedata.sql"\
-  "projects/_resources/SQL/projectslist.sql"
+seed_data_files=( \
+  "projects.seed.sql"\
+  "createusers.sql"\
+  "projectslist.sql"
 )
-
 exec_sql_files=()
 
 # move to working directory
@@ -37,9 +38,12 @@ fi
 # backup data
 # mysqldump --no-create-info --no-create-db --host=$database_server --user=$database_user --password=$database_password --databases $database_name
 
-# move to site root directory
-cd ../..
-
+if $drop_tables; then
+  for sql in "${drop_table_scripts[@]}"
+  do
+    exec_sql_files+=($sql)
+  done
+fi
 
 if $include_ddl; then
   for sql in "${ddl_files[@]}"
@@ -55,8 +59,8 @@ if $include_sp; then
   done
 fi
 
-if $include_fake_data; then
-  for sql in "${fake_data_files[@]}"
+if $include_seed_data; then
+  for sql in "${seed_data_files[@]}"
   do
     exec_sql_files+=($sql)
   done
