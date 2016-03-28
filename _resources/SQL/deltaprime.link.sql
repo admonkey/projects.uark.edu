@@ -3,13 +3,13 @@ DROP TABLE IF EXISTS Link_DeltaPrimeProjects;
 
 CREATE TABLE IF NOT EXISTS Link_DeltaPrimeProjects (
   Project_Id INT PRIMARY KEY NOT NULL,
-  project_key INT NOT NULL,
+  project_key INT NOT NULL UNIQUE,
   FOREIGN KEY (project_key) REFERENCES Content(content_key)
 );
 
 CREATE TABLE IF NOT EXISTS Link_DeltaPrimeComments (
   Comment_Id INT PRIMARY KEY NOT NULL,
-  content_key INT NOT NULL,
+  content_key INT NOT NULL UNIQUE,
   FOREIGN KEY (content_key) REFERENCES Content(content_key)
 );
 
