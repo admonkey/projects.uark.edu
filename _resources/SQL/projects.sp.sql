@@ -442,6 +442,7 @@ this_procedure:BEGIN
   );
   
   SET new_content_key = LAST_INSERT_ID();
+  UPDATE Content SET project_key = new_content_key WHERE content_key = new_content_key;
   
   INSERT INTO Link_DeltaPrimeProjects VALUES (p_Project_Id,new_content_key);
 
