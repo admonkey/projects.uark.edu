@@ -66,17 +66,13 @@ if( !empty($mysqli_connected) ){
 
   // print
   do {
-    odbc_result_all($mssql_result, "border=1");
-    
-    //$sql_insert_new_projects = "";
-    $sql_update_old_projects = "";
-    $sql_delete_old_projects = "";
-      
+    //odbc_result_all($mssql_result, "border=1");
+
     while ($row = odbc_fetch_array($mssql_result)){
 
       // null time if not edited
       if(empty($row["content_edited_time"])) $content_edited_time = null;
-      else $content_edited_time = "'$row[content_edited_time]'";
+      else $content_edited_time = "$row[content_edited_time]";
 
       // if new project
       if (empty($row["project_key"])){
@@ -84,60 +80,60 @@ if( !empty($mysqli_connected) ){
           CALL import_new_deltaprime_project(?,?,?,?,?);
         ";
         //die($sql_insert_new_projects);
-        if (!($stmt = $mysqli_connection->prepare($sql_insert_new_projects))) {
+        if (!($stmt_insert_project = $mysqli_connection->prepare($sql_insert_new_projects))) {
           echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
         } else {
-          $stmt->bind_param('ssssi', $row["content_creation_time"], $content_edited_time, $row["content_title"], $row["content_value"], $row["Project_Id"]);
-          if (!$stmt->execute()) {
-            echo "Execute failed: (" . $stmt->errno . ") ". $stmt->error;
+          $stmt_insert_project->bind_param('ssssi', $row["content_creation_time"], $content_edited_time, $row["content_title"], $row["content_value"], $row["Project_Id"]);
+          if (!$stmt_insert_project->execute()) {
+            echo "Execute failed: (" . $stmt_insert_project->errno . ") ". $stmt_insert_project->error;
           } else {
-            /*
-            $stmt->store_result();
-            $stmt->bind_result($response);
-            $stmt->fetch();
-            */
-            echo "inserted<br/>";
+            echo "inserted $row[content_title]<br/>";
           }
         }
       }
-      
+
       // else if deleted
-      else if (empty($row["Project_Id"])){
-        $sql_delete_old_projects .= " UPDATE Content SET content_deleted = TRUE WHERE content_key = $row[project_key]; ";
+      else if (is_null($row["Project_Id"])){
+        $sql_delete_old_projects = "UPDATE Content SET content_deleted = TRUE WHERE content_key = $row[project_key]; ";
+        $result = $mysqli_connection->query("$sql_delete_old_projects") or die($mysqli_connection->error);
       }
-      
+
       // else update project
       else {
-        $sql_update_old_projects .= "
+        $sql_update_old_projects = "
           UPDATE Content SET
-            content_title = '$row[content_title]',
-            content_value = '$row[content_value]',
-            content_creation_time = '$row[content_creation_time]',
+            content_title = ?,
+            content_value = ?,
+            content_creation_time = ?,
             content_createdby_user_key = -2,
-            content_edited_time = $content_edited_time,
+            content_edited_time = ?,
             content_editedby_user_key = -2,
             content_deleted = FALSE
-          WHERE content_key = $row[project_key];
+          WHERE content_key = ?;
         ";
+        if (!($stmt_update_project = $mysqli_connection->prepare($sql_update_old_projects))) {
+          echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
+        } else {
+          $stmt_update_project->bind_param('ssssi', $row["content_title"], $row["content_value"], $row["content_creation_time"], $content_edited_time, $row["project_key"]);
+          if (!$stmt_update_project->execute()) {
+            echo "Execute failed: (" . $stmt_update_project->errno . ") ". $stmt_update_project->error;
+          } else {
+            echo "updated $row[content_title]<br/>";
+          }
+        }
       }
-    
+
     }
-  
+
   } while (odbc_next_result($mssql_result));
-    
+
   // close
   odbc_close_all();
   
-  // update MySQL
-  //if(!empty($sql_insert_new_projects)) echo "$sql_insert_new_projects";
-    //$result = $mysqli_connection->query("$sql_insert_new_projects") or die($mysqli_connection->error);
-  //else echo "no new projects<br/>";
-  if(!empty($sql_update_old_projects)) echo "$sql_update_old_projects";
-    //$result = $mysqli_connection->query("$sql_update_old_projects") or die($mysqli_connection->error);
-  else echo "no updated projects<br/>";
-  if(!empty($sql_delete_old_projects)) echo "$sql_delete_old_projects";
-    //$result = $mysqli_connection->query("$sql_delete_old_projects") or die($mysqli_connection->error);
-  else echo "no deleted projects<br/>";
+  // report no updates
+  if(empty($sql_insert_new_projects)) echo "no new projects<br/>";
+  if(empty($sql_update_old_projects)) echo "no updated projects<br/>";
+  if(empty($sql_delete_old_projects)) echo "no deleted projects<br/>";
 
 } else {
   // help connecting to database

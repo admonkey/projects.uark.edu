@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS Forum_Messages;
 DROP TABLE IF EXISTS Forum_Threads;
+DROP TABLE IF EXISTS Link_DeltaPrimeComments;
+DROP TABLE IF EXISTS Link_DeltaPrimeProjects;
 DROP TABLE IF EXISTS Link_Groups_Content;
 DROP TABLE IF EXISTS Link_Groups_Users_History;
 DROP TABLE IF EXISTS Link_Groups_Users;
