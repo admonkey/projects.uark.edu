@@ -137,14 +137,25 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
     if ( !empty($include_tablesorter) ) {
       echo "
 	<!-- TABLESORTER -->
-	<script src='$path_web_root/_resources/tablesorter/tablesorter.2.0.5b.min.js'></script>
-	<link rel='stylesheet' href='$path_web_root/_resources/tablesorter/tablesorter.css'>
+	<script src='//cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js'></script>
+	<link rel='stylesheet' href='//cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'>
 	<script>
 	  function apply_tablesorter() {
-		  $('table').addClass('table table-hover table-striped table-bordered table-condensed tablesorter').tablesorter();
+		  $('table').addClass('table table-hover table-striped table-bordered table-condensed tablesorter').DataTable();
 	  }
 	  $(apply_tablesorter());
 	</script>
+	<style>
+	table.dataTable tbody tr.bg-primary {
+          background-color: #337ab7;
+        }
+        table.dataTable.no-footer {
+          border-bottom: 0px solid #111;
+        }
+        .table-hover > tbody > tr:hover {
+          background-color: lightblue;
+        }
+	</style>
       ";
     }
   ?>
