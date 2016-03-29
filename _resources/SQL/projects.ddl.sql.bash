@@ -27,6 +27,13 @@ seed_data_files=( \
 )
 exec_sql_files=()
 
+if [[ $1 == "-a" ]]; then
+  drop_tables=true
+  include_ddl=true
+  include_sp=true
+  include_seed_data=true
+fi
+
 # move to working directory
 cd $( dirname "${BASH_SOURCE[0]}" )
 
