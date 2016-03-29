@@ -36,7 +36,7 @@ if(empty($_GET["content_key"])) {
 <?php if(!empty($_GET["content_key"])) include("read.content.ajax.php"); ?>
 </div><!-- /#list_of_projects_div.table-responsive -->
 
-<div class='well'>
+<div class='well' style='display:none'>
 <div id='list_of_threads_div' class='table-responsive' style='display:none'>
 </div><!-- /#list_of_threads_div.table-responsive -->
 
@@ -184,9 +184,11 @@ function fetch_content_list(parent_content_key, insert_div){
 	  insert_div.closest(".content_container").hide().show("highlight", {duration:2000});
 	  insert_div.alternateNestedBgColor(['white', '#f5f5f5']);
 	  // scroll to newest content
+	  /*
 	  $("html, body").animate({
 	      scrollTop: (insert_div.find(".children_container").last().closest(".content_container").hide().show("highlight", {duration:5000} ).offset().top) - (0.75*screen.height)
 	  }, "slow");
+	  */
 	  insert_div.find(".upvote").upvote();
 	});
       }
@@ -215,7 +217,7 @@ function click_row(tr){
   if(! thread_key){
     toggle_list($("#show_list_of_projects"), $("#list_of_projects_div"));
     fetch_content(content_key,$("#project_content_div"));
-    fetch_content_table(content_key, $("#list_of_threads_div"));
+    //fetch_content_table(content_key, $("#list_of_threads_div"));
   } else
     fetch_content(thread_key,$("#thread_div"));
   tr.addClass("bg-primary").siblings().removeClass("bg-primary");
