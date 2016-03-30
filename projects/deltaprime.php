@@ -11,9 +11,6 @@ require_once("_resources/header.inc.php");
 
 if( !empty($mysqli_connected) ){
 
-  // TODO: get new project_comment_IDs
-  // SELECT * FROM Comment WHERE Comment_Id NOT IN ($project_comment_IDs)
-
   // get existing deltaprime projects
   $sql_Link_DeltaPrimeProjects = "
     DECLARE @Link_DeltaPrimeProjects TABLE (
@@ -32,7 +29,7 @@ if( !empty($mysqli_connected) ){
       // trim trailing comma and end statement;
       $sql_Link_DeltaPrimeProjects = rtrim($sql_Link_DeltaPrimeProjects, ",") . ";";
   }
-  
+
   // get deltaprime projects, joined with link keys
   $mssql_query = "
     SELECT
@@ -127,13 +124,156 @@ if( !empty($mysqli_connected) ){
 
   } while (odbc_next_result($mssql_result));
 
-  // close
-  odbc_close_all();
-  
   // report no updates
   if(empty($sql_insert_new_projects)) echo "no new projects<br/>";
   if(empty($sql_update_old_projects)) echo "no updated projects<br/>";
   if(empty($sql_delete_old_projects)) echo "no deleted projects<br/>";
+
+
+  // get existing deltaprime projects
+  $sql_Link_DeltaPrimeProjects = "
+    DECLARE @Link_DeltaPrimeProjects TABLE (
+      Project_Id INT,
+      project_key INT
+    );
+  ";
+  $result = $mysqli_connection->query("SELECT * FROM Link_DeltaPrimeProjects") or die($mysqli_connection->error);
+  if($result->num_rows > 0){
+      $sql_Link_DeltaPrimeProjects .= "
+        INSERT INTO @Link_DeltaPrimeProjects VALUES 
+      ";
+      while ($row = $result->fetch_assoc()){
+          $sql_Link_DeltaPrimeProjects .= "($row[Project_Id],$row[project_key]),";
+      }
+      // trim trailing comma and end statement;
+      $sql_Link_DeltaPrimeProjects = rtrim($sql_Link_DeltaPrimeProjects, ",") . ";";
+  }
+
+  // get existing deltaprime comments
+  $sql_Link_DeltaPrimeComments = "
+    DECLARE @Link_DeltaPrimeComments TABLE (
+      Comment_Id INT,
+      content_key INT
+    );
+  ";
+  $result = $mysqli_connection->query("SELECT * FROM Link_DeltaPrimeComments") or die($mysqli_connection->error);
+  if($result->num_rows > 0){
+      $sql_Link_DeltaPrimeComments .= "
+        INSERT INTO @Link_DeltaPrimeComments VALUES
+      ";
+      while ($row = $result->fetch_assoc()){
+          $sql_Link_DeltaPrimeComments .= "($row[Comment_Id],$row[content_key]),";
+      }
+      // trim trailing comma and end statement;
+      $sql_Link_DeltaPrimeComments = rtrim($sql_Link_DeltaPrimeComments, ",") . ";";
+  }
+
+  // get deltaprime projects, joined with link keys
+  $mssql_query = "
+    SELECT
+      CONCAT('RE: ',Project_Name) AS 'content_title',
+      Comment AS 'content_value',
+      lp.project_key,
+      lc.content_key,
+      c.Created_Date AS 'content_creation_time',
+      -2 AS 'content_createdby_user_key',
+      c.Changed_Date AS 'content_edited_time',
+      -2 AS 'content_editedby_user_key',
+      c.Comment_Id
+    FROM Comment c
+    JOIN Project_Info p
+      ON c.Project_Id = p.Project_Id
+    LEFT JOIN @Link_DeltaPrimeProjects lp
+      ON c.Project_Id = lp.Project_Id
+    LEFT JOIN @Link_DeltaPrimeComments lc
+      ON c.Comment_Id = lc.Comment_Id
+    WHERE Comment_Type = 'PUBLIC';
+  ";
+
+  // combine temp table with query
+  $mssql_query = "$sql_Link_DeltaPrimeProjects $sql_Link_DeltaPrimeComments $mssql_query";
+  //die($mssql_query);
+
+  // connect
+  $mssql_connection = odbc_connect(
+    "DRIVER={$mssql_driver};Server=$mssql_server;Database=$mssql_database;",
+    $mssql_username, 
+    $mssql_password
+  ) or die("could not connect: " . odbc_errormsg());
+
+  $mssql_result = odbc_exec($mssql_connection, $mssql_query) or die($mysqli_connection->error);
+
+  // print
+  do {
+//     odbc_result_all($mssql_result, "border=1");
+
+    while ($row = odbc_fetch_array($mssql_result)){
+
+      // null time if not edited
+      if(empty($row["content_edited_time"])) $content_edited_time = null;
+      else $content_edited_time = "$row[content_edited_time]";
+
+      // if new project
+      if (empty($row["content_key"])){
+        $sql_insert_new_comments = "
+          CALL import_new_deltaprime_comment(?,?,?,?,?,?);
+        ";
+        //die($sql_insert_new_comments);
+        if (!($stmt_insert_comment = $mysqli_connection->prepare($sql_insert_new_comments))) {
+          echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
+        } else {
+          //print_r($row);
+          $stmt_insert_comment->bind_param('ssissi', $row["content_title"], $row["content_value"], $row["project_key"], $row["content_creation_time"], $content_edited_time, $row["Comment_Id"]);
+          if (!$stmt_insert_comment->execute()) {
+            echo "Execute failed: (" . $stmt_insert_comment->errno . ") ". $stmt_insert_comment->error;
+          } else {
+            echo "inserted $row[content_title]<br/>";
+          }
+        }
+      }
+
+      // else if deleted
+      else if (is_null($row["Comment_Id"])){
+        $sql_delete_old_comments = "UPDATE Content SET content_deleted = TRUE WHERE content_key = $row[content_key]; ";
+        $result = $mysqli_connection->query("$sql_delete_old_comments") or die($mysqli_connection->error);
+      }
+
+      // else update project
+      else {
+        $sql_update_old_comments = "
+          UPDATE Content SET
+            content_title = ?,
+            content_value = ?,
+            content_creation_time = ?,
+            content_createdby_user_key = -2,
+            content_edited_time = ?,
+            content_editedby_user_key = -2,
+            content_deleted = FALSE
+          WHERE content_key = ?;
+        ";
+        if (!($stmt_update_comment = $mysqli_connection->prepare($sql_update_old_comments))) {
+          echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
+        } else {
+          $stmt_update_comment->bind_param('ssssi', $row["content_title"], $row["content_value"], $row["content_creation_time"], $content_edited_time, $row["content_key"]);
+          if (!$stmt_update_comment->execute()) {
+            echo "Execute failed: (" . $stmt_update_comment->errno . ") ". $stmt_update_comment->error;
+          } else {
+            echo "updated $row[content_title]<br/>";
+          }
+        }
+      }
+
+    }
+
+  } while (odbc_next_result($mssql_result));
+
+  // report no updates
+  if(empty($sql_insert_new_comments)) echo "no new comments<br/>";
+  if(empty($sql_update_old_comments)) echo "no updated comments<br/>";
+  if(empty($sql_delete_old_comments)) echo "no deleted comments<br/>";
+
+  // close
+  odbc_close_all();
 
 } else {
   // help connecting to database

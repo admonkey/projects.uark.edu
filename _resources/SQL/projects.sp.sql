@@ -22,6 +22,7 @@ DROP PROCEDURE IF EXISTS test_proc;
 DROP PROCEDURE IF EXISTS create_reply;
 DROP FUNCTION IF EXISTS authorize_content_editor;
 DROP PROCEDURE IF EXISTS import_new_deltaprime_project;
+DROP PROCEDURE IF EXISTS import_new_deltaprime_comment;
 
 DELIMITER $$
 
@@ -445,6 +446,45 @@ this_procedure:BEGIN
   UPDATE Content SET project_key = new_content_key WHERE content_key = new_content_key;
   
   INSERT INTO Link_DeltaPrimeProjects VALUES (p_Project_Id,new_content_key);
+
+END $$
+
+
+CREATE PROCEDURE import_new_deltaprime_comment (
+  p_content_title VARCHAR(100),
+  p_content_value VARCHAR(1000),
+  p_project_key INT,
+  p_content_creation_time TIMESTAMP,
+  p_content_edited_time TIMESTAMP,
+  p_Comment_Id INT
+)
+this_procedure:BEGIN
+
+  DECLARE new_content_key INT DEFAULT NULL;
+
+  INSERT INTO Content (
+    content_title,
+    content_value,
+    project_key,
+    parent_content_key,
+    content_creation_time,
+    content_createdby_user_key,
+    content_edited_time,
+    content_editedby_user_key
+  ) VALUES (
+    p_content_title,
+    p_content_value,
+    p_project_key,
+    p_project_key,
+    p_content_creation_time,-2,
+    p_content_edited_time,-2
+  );
+  
+  SET new_content_key = LAST_INSERT_ID();
+  UPDATE Content SET thread_key = new_content_key WHERE content_key = new_content_key;
+  UPDATE Content SET has_children = TRUE WHERE content_key = p_project_key;
+  
+  INSERT INTO Link_DeltaPrimeComments VALUES (p_Comment_Id,new_content_key);
 
 END $$
 
