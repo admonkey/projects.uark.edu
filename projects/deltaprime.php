@@ -125,9 +125,10 @@ if( !empty($mysqli_connected) ){
   } while (odbc_next_result($mssql_result));
 
   // report no updates
-  if(empty($sql_insert_new_projects)) echo "no new projects<br/>";
-  if(empty($sql_update_old_projects)) echo "no updated projects<br/>";
-  if(empty($sql_delete_old_projects)) echo "no deleted projects<br/>";
+  echo "<br/>";
+  if(empty($sql_insert_new_projects)) echo "no new projects<br/><br/>";
+  if(empty($sql_update_old_projects)) echo "no updated projects<br/><br/>";
+  if(empty($sql_delete_old_projects)) echo "no deleted projects<br/><br/>";
 
 
   // get existing deltaprime projects
@@ -268,9 +269,10 @@ if( !empty($mysqli_connected) ){
   } while (odbc_next_result($mssql_result));
 
   // report no updates
-  if(empty($sql_insert_new_comments)) echo "no new comments<br/>";
-  if(empty($sql_update_old_comments)) echo "no updated comments<br/>";
-  if(empty($sql_delete_old_comments)) echo "no deleted comments<br/>";
+  echo "<br/>";
+  if(empty($sql_insert_new_comments)) echo "no new comments<br/><br/>";
+  if(empty($sql_update_old_comments)) echo "no updated comments<br/><br/>";
+  if(empty($sql_delete_old_comments)) echo "no deleted comments<br/><br/>";
 
   // close
   odbc_close_all();
