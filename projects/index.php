@@ -5,8 +5,6 @@ $include_tablesorter = true;
 $include_mysqli = true;
 require_once("_resources/header.inc.php");
 
-if(empty($_GET["content_key"])) echo "<h1>$section_title</h1>";
-
 ?>
 
 <?php
@@ -334,7 +332,7 @@ function show_content_editor(element){
   auto_expand_textarea(content_editor.find("textarea"));
   var content_key = content_container.find("content_data").attr("content_key");
   console.log(content_key);
-  var content_title = content_container.find("content_data").attr("content_title");
+  var content_title = content_container.find(".content_title").first().text();
   console.log(content_title);
   var content_value = content_container.find(".content_value").first().text();
   console.log(content_value);

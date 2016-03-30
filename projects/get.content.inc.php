@@ -3,11 +3,10 @@
 echo "<div class='content_super_container'><div class='content_container well'>";
 
   if ($row["content_key"] === $row["project_key"])
-    echo "<h1>$row[content_title]</h1>";
-  elseif ($row["content_key"] === $row["thread_key"])
-    echo "<h2>$row[content_title]</h2>";
+    echo "<h1 class='content_title'>$row[content_title]</h1>";
   elseif (!substr_startswith($row["content_title"], "RE: "))
-    echo "<h3>$row[content_title]</h3>";
+    echo "<h3 class='content_title'>$row[content_title]</h3>";
+  else echo "<h3 class='content_title' style='display:none'>$row[content_title]</h3>";
 
 echo "
   <label class='label label-primary'>
