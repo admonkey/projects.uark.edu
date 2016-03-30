@@ -8,7 +8,6 @@ require_once("_resources/header.inc.php");
 if(empty($_GET["content_key"])) echo "<h1>$section_title</h1>";
 
 ?>
-<p class='lead'>Make sure you have read <a href='rules.php'>the rules</a>.</p>
 
 <?php
 if(empty($_GET["content_key"])) {
