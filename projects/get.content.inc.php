@@ -19,7 +19,7 @@ echo "
   </label>
 ";
   
-if (!empty($row["content_editedby_user_key"])) echo "
+if (!empty($row["content_edited_time"])) echo "
   <label class='label label-default'>edited</label>
   <label class='label label-info'>$row[content_edited_time]</label>
   <label class='label label-primary'>
