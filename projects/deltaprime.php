@@ -34,8 +34,8 @@ if( !empty($mysqli_connected) ){
   $mssql_query = "
     SELECT
       Project_Name AS 'content_title'
-      ,CASE WHEN Created_Date IS NULL THEN Changed_Date ELSE Created_Date END AS 'content_creation_time'
-      ,Changed_Date AS 'content_edited_time'
+      ,CASE WHEN Created_Date IS NULL THEN Changed_Date ELSE Created_Date END AS 'creation_time'
+      ,Changed_Date AS 'edited_time'
       ,p.Project_Id
       ,l.project_key
       ,CAST(CONCAT(
@@ -68,8 +68,8 @@ if( !empty($mysqli_connected) ){
     while ($row = odbc_fetch_array($mssql_result)){
 
       // null time if not edited
-      if(empty($row["content_edited_time"])) $content_edited_time = null;
-      else $content_edited_time = "$row[content_edited_time]";
+      if(empty($row["edited_time"])) $content_edited_time = null;
+      else $content_edited_time = "$row[edited_time]";
 
       // if new project
       if (empty($row["project_key"])){
@@ -80,7 +80,7 @@ if( !empty($mysqli_connected) ){
         if (!($stmt_insert_project = $mysqli_connection->prepare($sql_insert_new_projects))) {
           echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
         } else {
-          $stmt_insert_project->bind_param('ssssi', $row["content_creation_time"], $content_edited_time, $row["content_title"], $row["content_value"], $row["Project_Id"]);
+          $stmt_insert_project->bind_param('ssssi', $row["creation_time"], $content_edited_time, $row["content_title"], $row["content_value"], $row["Project_Id"]);
           if (!$stmt_insert_project->execute()) {
             echo "Execute failed: (" . $stmt_insert_project->errno . ") ". $stmt_insert_project->error;
           } else {
@@ -111,7 +111,7 @@ if( !empty($mysqli_connected) ){
         if (!($stmt_update_project = $mysqli_connection->prepare($sql_update_old_projects))) {
           echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
         } else {
-          $stmt_update_project->bind_param('ssssi', $row["content_title"], $row["content_value"], $row["content_creation_time"], $content_edited_time, $row["project_key"]);
+          $stmt_update_project->bind_param('ssssi', $row["content_title"], $row["content_value"], $row["creation_time"], $content_edited_time, $row["project_key"]);
           if (!$stmt_update_project->execute()) {
             echo "Execute failed: (" . $stmt_update_project->errno . ") ". $stmt_update_project->error;
           } else {
@@ -175,9 +175,9 @@ if( !empty($mysqli_connected) ){
       Comment AS 'content_value',
       lp.project_key,
       lc.content_key,
-      c.Created_Date AS 'content_creation_time',
+      c.Created_Date AS 'creation_time',
       -2 AS 'content_createdby_user_key',
-      c.Changed_Date AS 'content_edited_time',
+      c.Changed_Date AS 'edited_time',
       -2 AS 'content_editedby_user_key',
       c.Comment_Id
     FROM Comment c
@@ -210,8 +210,8 @@ if( !empty($mysqli_connected) ){
     while ($row = odbc_fetch_array($mssql_result)){
 
       // null time if not edited
-      if(empty($row["content_edited_time"])) $content_edited_time = null;
-      else $content_edited_time = "$row[content_edited_time]";
+      if(empty($row["edited_time"])) $content_edited_time = null;
+      else $content_edited_time = "$row[edited_time]";
 
       // if new project
       if (empty($row["content_key"])){
@@ -223,7 +223,7 @@ if( !empty($mysqli_connected) ){
           echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
         } else {
           //print_r($row);
-          $stmt_insert_comment->bind_param('ssissi', $row["content_title"], $row["content_value"], $row["project_key"], $row["content_creation_time"], $content_edited_time, $row["Comment_Id"]);
+          $stmt_insert_comment->bind_param('ssissi', $row["content_title"], $row["content_value"], $row["project_key"], $row["creation_time"], $content_edited_time, $row["Comment_Id"]);
           if (!$stmt_insert_comment->execute()) {
             echo "Execute failed: (" . $stmt_insert_comment->errno . ") ". $stmt_insert_comment->error;
           } else {
@@ -254,7 +254,7 @@ if( !empty($mysqli_connected) ){
         if (!($stmt_update_comment = $mysqli_connection->prepare($sql_update_old_comments))) {
           echo "Prepare failed: (" . $mysqli_connection->errno . ") " . $mysqli_connection->error;
         } else {
-          $stmt_update_comment->bind_param('ssssi', $row["content_title"], $row["content_value"], $row["content_creation_time"], $content_edited_time, $row["content_key"]);
+          $stmt_update_comment->bind_param('ssssi', $row["content_title"], $row["content_value"], $row["creation_time"], $content_edited_time, $row["content_key"]);
           if (!$stmt_update_comment->execute()) {
             echo "Execute failed: (" . $stmt_update_comment->errno . ") ". $stmt_update_comment->error;
           } else {
