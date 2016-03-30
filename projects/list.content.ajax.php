@@ -31,6 +31,7 @@ if( !empty($mysqli_connected) ){
       <table border=1>
 	<thead>
 	  <tr>
+	    <th>Votes</th>
 	    <th>Title</th>
 	    <th>Created</th>
 	    <th>Created By</th>
@@ -42,9 +43,12 @@ if( !empty($mysqli_connected) ){
     ";
 
     // data
-    while ($row = $result->fetch_assoc())
+    while ($row = $result->fetch_assoc()){
+      if(empty($row["total_votes"])) $total_votes = "0";
+      else $total_votes = $row["total_votes"];
       echo "
 	<tr class='hover' onclick='click_row($(this))'>
+	  <td>$total_votes</td>
 	  <td>
 	    <content_data
 	      project_key='$row[project_key]'
@@ -63,7 +67,7 @@ if( !empty($mysqli_connected) ){
 	  <td>$row[content_editedby_username]</td>
 	</tr>
       ";
-    
+    }
       // close table
       echo "
 	  </tbody>
