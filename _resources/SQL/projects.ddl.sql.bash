@@ -5,16 +5,34 @@ database_user="username"
 database_password="p@55W0rd"
 database_name="projects_dev"
 
-include_fake_data=true
+drop_tables=false
+include_ddl=true
+include_sp=true
+include_seed_data=false
 
-# must be in proper order for drop/add with key relationships
+drop_table_scripts=( \
+  "projects.drop.sql"
+)
 ddl_files=( \
-  "_resources/SQL/projects.ddl.sql"\
-  "_resources/SQL/projects.seed.sql"
+  "projects.ddl.sql"
 )
-fake_data_files=(\
-  "projects/_resources/SQL/projects.fakedata.sql"
+sp_files=( \
+  "projects.sp.sql"\
+  "PR_Vote.sql"
 )
+seed_data_files=( \
+  "projects.seed.sql"\
+  "createusers.sql"\
+  "projectslist.sql"
+)
+exec_sql_files=()
+
+if [[ $1 == "-a" ]]; then
+  drop_tables=true
+  include_ddl=true
+  include_sp=true
+  include_seed_data=true
+fi
 
 # move to working directory
 cd $( dirname "${BASH_SOURCE[0]}" )
@@ -24,18 +42,38 @@ if [ -f credentials_local.bash ]; then
   source credentials_local.bash
 fi
 
-# move to site root directory
-cd ../..
+# backup data
+# mysqldump --no-create-info --no-create-db --host=$database_server --user=$database_user --password=$database_password --databases $database_name
 
-
-if $include_fake_data; then
-  for sql in "${fake_data_files[@]}"
+if $drop_tables; then
+  for sql in "${drop_table_scripts[@]}"
   do
-    ddl_files+=($sql)
+    exec_sql_files+=($sql)
   done
 fi
 
-for sql in "${ddl_files[@]}"
+if $include_ddl; then
+  for sql in "${ddl_files[@]}"
+  do
+    exec_sql_files+=($sql)
+  done
+fi
+
+if $include_sp; then
+  for sql in "${sp_files[@]}"
+  do
+    exec_sql_files+=($sql)
+  done
+fi
+
+if $include_seed_data; then
+  for sql in "${seed_data_files[@]}"
+  do
+    exec_sql_files+=($sql)
+  done
+fi
+
+for sql in "${exec_sql_files[@]}"
 do
   mysql --host=$database_server --user=$database_user --password=$database_password --database=$database_name < $sql
 done

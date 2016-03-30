@@ -133,21 +133,61 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
     }
   ?>
 
-  <?php
-    if ( !empty($include_tablesorter) ) {
-      echo "
-	<!-- TABLESORTER -->
-	<script src='$path_web_root/_resources/tablesorter/tablesorter.2.0.5b.min.js'></script>
-	<link rel='stylesheet' href='$path_web_root/_resources/tablesorter/tablesorter.css'>
-	<script>
-	  function apply_tablesorter() {
-		  $('table').addClass('table table-hover table-striped table-bordered table-condensed tablesorter').tablesorter();
-	  }
-	  $(apply_tablesorter());
-	</script>
-      ";
-    }
-  ?>
+<?php if ( !empty($include_tablesorter) ) { ?>
+<!-- TABLESORTER -->
+<script src='//cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js'></script>
+<link rel='stylesheet' href='//cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css'>
+
+<script>
+
+function apply_tablesorter() {
+        $('table').addClass('table table-hover table-striped table-bordered table-condensed tablesorter').DataTable({'autoWidth': false,"order": [[ 1, "desc" ]]});
+}
+$.fn.dataTableExt.sErrMode = "console";
+
+$.fn.dataTableExt.oApi._fnLog = function (oSettings, iLevel, sMesg, tn) {
+  var sAlert = (oSettings === null)
+    ? "DataTables warning: "+sMesg
+    : "DataTables warning (table id = '"+oSettings.sTableId+"'): "+sMesg
+  ;
+
+  if (tn) {
+    sAlert += ". For more information about this error, please see "+
+              "http://datatables.net/tn/"+tn
+    ;
+  }
+
+  if (iLevel === 0) {
+    if ($.fn.dataTableExt.sErrMode == "alert") {
+      alert(sAlert);
+    } else if ($.fn.dataTableExt.sErrMode == "thow") {
+      throw sAlert;
+    } else  if ($.fn.dataTableExt.sErrMode == "console") {
+      console.log(sAlert);
+    } else  if ($.fn.dataTableExt.sErrMode == "mute") {}
+
+    return;
+  } else if (console !== undefined && console.log) {
+    console.log(sAlert);
+  }
+}
+
+$(apply_tablesorter());
+</script>
+
+<style>
+table.dataTable tbody tr.bg-primary {
+  background-color: #337ab7;
+}
+table.dataTable.no-footer {
+  border-bottom: 0px solid #111;
+}
+.table-hover > tbody > tr:hover {
+  background-color: lightblue;
+}
+</style>
+
+<?php }?>
 
 
 </html>
