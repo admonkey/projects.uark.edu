@@ -314,6 +314,29 @@ this_procedure:BEGIN
 END $$
 
 
+CREATE PROCEDURE fetch_projects ()
+this_procedure:BEGIN
+
+  SELECT 
+    SUM(v.vote_value) AS 'total_votes',
+    c.content_title,
+    c.content_key,
+    c.content_creation_time,
+    uc.username AS 'content_createdby_username',
+    MAX(c.content_edited_time) AS 'last_updated',
+    (COUNT(c.content_key) - 1) AS 'total_comments'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Votes v
+    ON c.content_key = v.content_key
+  WHERE  c.content_key > 0
+    AND content_deleted = FALSE
+  GROUP BY c.project_key;
+
+END $$
+
+
 CREATE PROCEDURE update_content (
   IN p_user_key INT,
   IN p_content_key INT,
