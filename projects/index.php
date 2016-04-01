@@ -201,6 +201,7 @@ function fetch_content(content_key, insert_div){
 	insert_div.find(".upvote").upvote();
 	insert_div.show("blind");
 	history.pushState({}, null, "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
+	ga('send', 'pageview');
 	if(insert_div.is($("#thread_div")))
 	  fetch_content_list(content_key, $("#thread_div").find(".children_container"));
       }
