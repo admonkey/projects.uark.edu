@@ -349,9 +349,12 @@ this_procedure:BEGIN
   DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
   DECLARE valid_content_key INT DEFAULT NULL;
   DECLARE valid_content_editedby_user_key INT DEFAULT NULL;
-  
+  DECLARE deleted_pkey INT DEFAULT NULL;
+  DECLARE count_children INT DEFAULT NULL;
+
   -- validate
-  SELECT content_key INTO valid_content_key
+  SELECT content_key, parent_content_key
+  INTO valid_content_key, deleted_pkey
   FROM Content
   WHERE content_key = p_content_key;
   IF valid_content_key IS NULL THEN
@@ -422,6 +425,15 @@ this_procedure:BEGIN
     UPDATE Content
     SET content_deleted = p_content_deleted
     WHERE content_key = valid_content_key;
+
+    SELECT COUNT(content_key) INTO count_children
+    FROM `Content`
+    WHERE parent_content_key = deleted_pkey
+      AND content_deleted = FALSE;
+    IF count_children < 1 THEN
+      UPDATE Content SET has_children = FALSE
+      WHERE content_key = deleted_pkey ;
+    END IF;
   END IF;
   
   UPDATE Content
