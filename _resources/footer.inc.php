@@ -141,7 +141,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
 <script>
 
 function apply_tablesorter() {
-        $('table').addClass('table table-hover table-striped table-bordered table-condensed tablesorter').DataTable({'autoWidth': false,"order": [[ 1, "desc" ]]});
+        $('table').addClass('table table-hover table-striped table-bordered table-condensed tablesorter').DataTable({'autoWidth': false,"order": [[ 0, "desc" ]]});
 }
 $.fn.dataTableExt.sErrMode = "console";
 

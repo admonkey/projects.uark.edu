@@ -314,6 +314,29 @@ this_procedure:BEGIN
 END $$
 
 
+CREATE PROCEDURE fetch_projects ()
+this_procedure:BEGIN
+
+  SELECT 
+    SUM(v.vote_value) AS 'total_votes',
+    c.content_title,
+    c.content_key,
+    c.content_creation_time,
+    uc.username AS 'content_createdby_username',
+    MAX(c.content_edited_time) AS 'last_updated',
+    (COUNT(c.content_key) - 1) AS 'total_comments'
+  FROM Content c
+  LEFT JOIN Users uc
+    ON c.content_createdby_user_key = uc.user_key
+  LEFT JOIN Votes v
+    ON c.content_key = v.content_key
+  WHERE  c.content_key > 0
+    AND content_deleted = FALSE
+  GROUP BY c.project_key;
+
+END $$
+
+
 CREATE PROCEDURE update_content (
   IN p_user_key INT,
   IN p_content_key INT,
@@ -326,9 +349,12 @@ this_procedure:BEGIN
   DECLARE authorization_msg VARCHAR(20) DEFAULT NULL;
   DECLARE valid_content_key INT DEFAULT NULL;
   DECLARE valid_content_editedby_user_key INT DEFAULT NULL;
-  
+  DECLARE deleted_pkey INT DEFAULT NULL;
+  DECLARE count_children INT DEFAULT NULL;
+
   -- validate
-  SELECT content_key INTO valid_content_key
+  SELECT content_key, parent_content_key
+  INTO valid_content_key, deleted_pkey
   FROM Content
   WHERE content_key = p_content_key;
   IF valid_content_key IS NULL THEN
@@ -399,6 +425,15 @@ this_procedure:BEGIN
     UPDATE Content
     SET content_deleted = p_content_deleted
     WHERE content_key = valid_content_key;
+
+    SELECT COUNT(content_key) INTO count_children
+    FROM `Content`
+    WHERE parent_content_key = deleted_pkey
+      AND content_deleted = FALSE;
+    IF count_children < 1 THEN
+      UPDATE Content SET has_children = FALSE
+      WHERE content_key = deleted_pkey ;
+    END IF;
   END IF;
   
   UPDATE Content

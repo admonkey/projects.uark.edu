@@ -171,6 +171,20 @@ function fetch_content_table(parent_content_key, insert_div){
   });
 }
 
+function fetch_projects_table(){
+  var insert_div = $("#list_of_projects_div");
+  insert_div.hide("blind", function(){
+    $("#thread_div").hide("blind");
+    $.ajax({url: "tab.content.ajax.php",
+      success: function(result){
+        insert_div.html(result);
+        apply_tablesorter();
+        insert_div.show("blind");
+      }
+    });
+  });
+}
+
 function fetch_content_list(parent_content_key, insert_div){
   insert_div.hide("blind", function(){
     $.ajax({url: "list.content.ajax.php?list&parent_content_key="+parent_content_key,
@@ -201,6 +215,7 @@ function fetch_content(content_key, insert_div){
 	insert_div.find(".upvote").upvote();
 	insert_div.show("blind");
 	history.pushState({}, null, "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
+	ga('send', 'pageview', "<?php echo "$path_web_root" ?>/projects/?content_key="+content_key);
 	if(insert_div.is($("#thread_div")))
 	  fetch_content_list(content_key, $("#thread_div").find(".children_container"));
       }
@@ -399,17 +414,9 @@ jQuery(function($) {
 });
 
 $(function(){
-  
   $(".upvote").upvote();
+  $(fetch_projects_table());
 });
-
-<?php if(!empty($_GET["content_key"])) {
-  echo "$(fetch_content_table($_GET[content_key], $(\"#list_of_threads_div\")));";
-} else {
-  ?>$(fetch_content_table(null, $("#list_of_projects_div")));<?php
-}
-?>
-
 </script>
 <script src="<?php echo "$path_web_root/"; ?>_resources/jqvote/lib/jquery.upvote.js"></script>
 <script src="<?php echo "$path_web_root/"; ?>_resources/jqvote/lib/jquery.upvote.js"></script>
