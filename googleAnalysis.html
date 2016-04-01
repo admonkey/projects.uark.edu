@@ -4,10 +4,12 @@
 
 <style>
  #chart-1-container {
- width: 50%;
+ width: 45%;
+ float: left;
  }
  #chart-2-container {
- width: 50%;
+ width: 45%;
+ float: left;
  }
 
 </style>
@@ -100,7 +102,7 @@ gapi.analytics.ready(function() {
   var dataChart2 = new gapi.analytics.googleCharts.DataChart({
     query: {
       metrics: 'ga:sessions',
-      dimensions: 'ga:country',
+      dimensions: 'ga:browser',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
       'max-results': 6,

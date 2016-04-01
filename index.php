@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< HEAD
 $no_well_container = true;
 // $page_title = 'Home Page';
 // $section_title = 'Root Section';
@@ -128,9 +127,6 @@ gapi.analytics.ready(function() {
 
 ";
 
-require_once('_resources/footer.inc.php');
-=======
-header("Location: projects/");
->>>>>>> bd6a827d2644f516625e2a81fd5fde92b0143817
+require_once("_resources/footer.inc.php");
 
 ?>
