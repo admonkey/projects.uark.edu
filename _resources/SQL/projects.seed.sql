@@ -5,5 +5,5 @@ INSERT INTO Content (content_key,content_createdby_user_key,parent_content_key,c
 INSERT INTO Content_Editors (content_key,user_key,is_admin,content_editor_createdby_user_key)
   VALUES (-1,-1,TRUE,-1);
 
-DELETE FROM Users WHERE user_key = -2;
-INSERT INTO Users (email,username, user_key) VALUES ('deltaprime','deltaprime', -2);
+-- DELETE FROM Users WHERE user_key = -2;
+-- INSERT INTO Users (email,username, user_key) VALUES ('deltaprime','deltaprime', -2);

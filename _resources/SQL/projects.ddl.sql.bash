@@ -21,9 +21,7 @@ sp_files=( \
   "PR_Vote.sql"
 )
 seed_data_files=( \
-  "projects.seed.sql"\
-  "createusers.sql"\
-  "projectslist.sql"
+  "projects.seed.sql"
 )
 exec_sql_files=()
 
