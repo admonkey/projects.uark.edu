@@ -318,21 +318,18 @@ CREATE PROCEDURE fetch_projects ()
 this_procedure:BEGIN
 
   SELECT 
-    SUM(v.vote_value) AS 'total_votes',
+    (SELECT SUM(vote_value) FROM Votes v WHERE c.project_key = v.content_key) AS 'total_votes',
     c.content_title,
     c.content_key,
     c.content_creation_time,
     uc.username AS 'content_createdby_username',
-    MAX(c.content_edited_time) AS 'last_updated',
+    GREATEST(IF(MAX(c.content_edited_time) IS NULL,0,MAX(c.content_edited_time)), MAX(c.content_creation_time)) AS 'last_updated',
     (COUNT(c.content_key) - 1) AS 'total_comments'
   FROM Content c
   LEFT JOIN Users uc
     ON c.content_createdby_user_key = uc.user_key
-  LEFT JOIN Votes v
-    ON c.content_key = v.content_key
   WHERE  c.content_key > 0
-    AND parent_content_key IS NULL
-    AND content_deleted = FALSE
+    AND (SELECT content_deleted FROM Content sc WHERE sc.content_key = c.project_key) = FALSE
   GROUP BY c.project_key;
 
 END $$
