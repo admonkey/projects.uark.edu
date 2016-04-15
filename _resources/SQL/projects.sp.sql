@@ -331,6 +331,7 @@ this_procedure:BEGIN
   LEFT JOIN Votes v
     ON c.content_key = v.content_key
   WHERE  c.content_key > 0
+    AND parent_content_key IS NULL
     AND content_deleted = FALSE
   GROUP BY c.project_key;
 
