@@ -323,7 +323,8 @@ this_procedure:BEGIN
     c.content_key,
     c.content_creation_time,
     uc.username AS 'content_createdby_username',
-    GREATEST(IF(MAX(c.content_edited_time) IS NULL,0,MAX(c.content_edited_time)), MAX(c.content_creation_time)) AS 'last_updated',
+    -- http://dba.stackexchange.com/questions/135656/why-is-mysql-mariadb-greatesttimestamp-now-padding-appending-results-with-ze/
+    GREATEST(STR_TO_DATE(IF(MAX(c.content_edited_time) IS NULL,0,MAX(c.content_edited_time)),'%Y-%m-%d %H:%i:%s'), MAX(c.content_creation_time)) AS 'last_updated',
     (COUNT(c.content_key) - 1) AS 'total_comments'
   FROM Content c
   LEFT JOIN Users uc
