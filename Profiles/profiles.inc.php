@@ -43,8 +43,8 @@ if( !empty($mysqli_connected) ){
     </table>
     
     <script>
-      function hyperlink_row(){
-	      $("tr").click( function() {
+      $(function (){
+	      $("tbody tr").click( function() {
 		      var row = $(this);
 		      var user_key = row.find("user_data").attr("user_key");
 		      var href = "?user_key=" + user_key;
@@ -52,8 +52,7 @@ if( !empty($mysqli_connected) ){
 	      }).hover( function() {
 		      $(this).toggleClass("hover");
 	      });
-      }
-      $(hyperlink_row());
+      });
     </script>
     <style>
       tr.hover {
