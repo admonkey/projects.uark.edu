@@ -60,23 +60,29 @@ body {
       overflow: hidden;
       z-index: 20;
   }
-  
+
   .navigation-menu {
     margin-left: 120px;
   }
-  
+
   .navbar li {
     /*width: 100px;*/
     text-align: center;
   }
-  
+
   .navbar-default .navbar-nav>li>a:hover {
     border-color: #af0001;
   }
   .navbar {
-      margin-top: 77px;
+      margin-top: 115px;
       margin-bottom: 10px;
   }
+}
+
+.walton-name {
+  position: absolute;
+  top: 32px;
+  margin-left: 220px;
 }
 
 .walton-name a {
@@ -89,6 +95,14 @@ body {
   text-decoration: none;
   color: #aa0000;
 }
+
+.walton-sub-name {
+  position: absolute;
+  top: 75px;
+  margin-left: 220px;
+  font-size: 20px;
+}
+
 .walton-sub-name a {
   color: #b3b3b3;
 }

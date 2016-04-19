@@ -75,9 +75,8 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
 <div id="header-bg"></div>
 <div class="container" id="opener" role="banner">
   <a class="brand" href="http://www.uark.edu/">University of Arkansas</a>
-  <h1 id="site-heading" style="position: absolute; top: 27px; margin-left: 220px;"><span class="walton-name"><a href="<?php echo $path_web_root;?>/"><?php echo $site_title;?></a></span></h1>
-  <h4>&nbsp;</h4>
-  <p id="site-heading" style="position: absolute; top: 85px; margin-left: 220px; font-size: 20px;"><span class="walton-sub-name"><a href="//walton.uark.edu">The Sam M. Walton College of Business</a></span></p>
+  <span id="site-heading" class="walton-name"><a href="<?php echo $path_web_root;?>/"><?php echo $site_title;?></a></span>
+  <span class="walton-sub-name"><a href="//walton.uark.edu">The Sam M. Walton College of Business</a></span>
 </div><!-- /#opener banner -->
 
     <nav class="navbar navbar-default">
