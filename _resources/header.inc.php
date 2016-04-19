@@ -76,7 +76,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
 <div class="container" id="opener" role="banner">
   <a class="brand" href="http://www.uark.edu/">University of Arkansas</a>
   <span id="site-heading" class="walton-name"><a href="<?php echo $path_web_root;?>/"><?php echo $site_title;?></a></span>
-  <span class="walton-sub-name"><a href="//walton.uark.edu">The Sam M. Walton College of Business</a></span>
+  <span class="walton-sub-name"><a href="<?php echo $path_web_root;?>/">Vote for the Best Ideas</a></span>
 </div><!-- /#opener banner -->
 
     <nav class="navbar navbar-default">
