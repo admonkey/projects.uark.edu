@@ -52,7 +52,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
     <link rel='stylesheet' href='$path_web_root/_resources/font-awesome-4.5.0/css/font-awesome.min.css'></link>
     
     <!-- UARK -->
-    <link rel='stylesheet' href='$path_web_root/_resources/bootstrap/uark.css'></link>
+    <link rel='stylesheet' href='$path_web_root/_resources/bootstrap/uark.css?1'></link>
 
   ";?>
 
