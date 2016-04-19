@@ -199,11 +199,29 @@ footer {
   color: #fff;
   font-weight: 300;
   display: block;
-  min-height: 100%
+  min-height: 100%;
+  padding-top: 25px;
 }
 
 footer a, footer a:hover {
   color: white;
+}
+
+#footer-walton-name > a {
+  color: #5a5a5a;
+  font-size: x-large;
+}
+
+#footer-logo {
+  font-size: x-large;
+}
+
+footer #social-stack li i:hover {
+    text-shadow: 0 0 4px #fff;
+}
+
+footer .nav > li > a:hover, footer .nav > li > a:focus {
+    background-color: transparent;
 }
 
 #footer-global-links, #social-stack {

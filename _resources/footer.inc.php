@@ -15,8 +15,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
          <div class="container">
             <div class="row" style="padding-top: 30px;">
                <div class="col-sm-7">
-<h3><a href="//information-systems.uark.edu/" style='color:#5a5a5a'>Department of Information Systems</a></h3>
-<h4><a href="//information-systems.uark.edu/graduate-program-masters-degree.php" style='color: #b3b3b3'>Graduate School of Business</a></h4>
+<div id='footer-walton-name'><a href="http://walton.uark.edu">Sam M. Walton College of Business</a></div>
 
 <p style="margin-bottom: 35px; padding: 20px;">
   <a href="//walton.uark.edu/directory/" class="btn navbar-btn btn-default" style="margin-top: -15px;">Walton Directory</a> 
@@ -42,7 +41,7 @@ if ( ! ((strpos(basename($_SERVER["SCRIPT_NAME"]),'.ajax.') !== false) || (strpo
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-	<h3 id="footer-logo"><a href="http://uark.edu">UNIVERSITY OF ARKANSAS</a></h3>
+	<div id="footer-logo"><a href="http://uark.edu">UNIVERSITY OF ARKANSAS</a></div>
 	<ul id="footer-global-links" class="list-unstyled">
 	  <li><a href="http://www.uark.edu/admissions/index.php">Admissions</a></li>
 	  <li><a href="http://www.uark.edu/academics/index.php">Academics</a></li>
